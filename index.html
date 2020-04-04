@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel='stylesheet' href='css/style.css'>
+</head>
+	<body>
+		<canvas id='canvas' width=1200 height=520></canvas>
+		<p id='description'>3D space shooter on WebGL</p>
+
+		<script id='vertex-shader' type='notjs'>
+			attribute vec4 a_position;	
+			attribute vec4 a_color;	
+			
+			uniform mat4 u_matrix;	
+			
+			varying vec4 v_color;
+			
+			void main() {
+				gl_Position = u_matrix * a_position;	
+				v_color = a_color;
+			}
+		</script>
+		<script id='fragment-shader' type='notjs'>
+			precision mediump float;
+			
+			varying vec4 v_color;
+			
+			void main() {
+				gl_FragColor = v_color;
+			}
+		</script>
+
+		<script src="js\utils.js"></script>
+		<script src="js\webglutils.js"></script>
+		<script src="js\game.js"></script>
+		
+		<!--<script src="js\webgltest.js"></script-->	
+	</body>
+</html>
