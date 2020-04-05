@@ -46,6 +46,7 @@
 			if(e.code == 'KeyE') {player.turnRight = true;}
 			if(e.code == 'KeyW') {player.accelerateON = true;}
 			if(e.code == 'Space') {player.brakesON = true;}
+			if(e.code == 'KeyS'){camera.mode == 0 ? camera.mode = 1 : camera.mode = 0;}
 		});
 		document.addEventListener('keyup', (e) => {
 			if(e.code == 'KeyQ') {player.turnLeft = false;}
@@ -74,7 +75,10 @@
 		
 		function start() {
 			draw(gameObjects);
-			realign(camera);
+			switch(camera.mode) {
+				case 0: realign(camera); break;
+				case 1: break;
+			}
 			process(gameObjects);
 			requestAnimationFrame(start);
 		}
@@ -190,7 +194,7 @@
 				0,	0,-250,	1,
 			];
 			this.velocity = [0, 0, 0];
-			this.acceleration = 1.5;
+			this.acceleration = 4;
 			this.rotationSpeed = [6, 0.15, 6];
 			this.rotation = [3, 0, 0];
 			this.exists = true;
@@ -417,8 +421,9 @@
 
 		function Bolt(o) {
 			this.isPlayer = false;
-			this.state = Object.values(o.state);
-			this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 50));
+			var s = o.state.slice();
+			this.state = s;
+			this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 100));
 			this.size = 5;
 			this.nodes = [0];
 			this.draftnodes = [
@@ -439,7 +444,7 @@
 					//1, 255,  1,
 					//1, 255,  1,
 				];
-			this.TTL = 30;
+			this.TTL = 15;
 			this.exists = true;
 			this.state = m4.translate(this.state, 0, 0, o.size*6);
 			setNodes(this);
@@ -451,7 +456,8 @@
 		}
 		function Throttle(o) {
 			this.isPlayer = false;
-			this.state = o.state;
+			var s = o.state.slice();
+			this.state = s;
 			this.size = 10;
 			this.nodes = [0];
 			this.draftnodes = [				
@@ -598,6 +604,7 @@
 		
 		function Camera(gl) {
 			//this.zoom = 100;
+			this.mode = 0;
 			this.scale = [1, 1, 1];					// global scale?
 			this.fieldOfViewRadians = degToRad(55);
 			this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
