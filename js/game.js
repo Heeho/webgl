@@ -37,6 +37,17 @@
 			currentX = nextX;
 			currentY = nextY;
 		});
+
+		canvas.addEventListener('touchmove', e => {
+			nextX = e.clientX - border.left;
+			nextY = e.clientY - border.top;
+			if (nextX > currentX) {			player.rotation[2] += degToRad(player.rotationSpeed[2]);} 
+			else if (nextX < currentX) {	player.rotation[2] -= degToRad(player.rotationSpeed[2]);}		
+			if (nextY > currentY) {			player.rotation[0] -= degToRad(player.rotationSpeed[0]);} 
+			else if (nextY < currentY) {	player.rotation[0] += degToRad(player.rotationSpeed[0]);}
+			currentX = nextX;
+			currentY = nextY;
+		});
 		
 		canvas.addEventListener('mousedown', e => {player.shootON = true;});
 		canvas.addEventListener('mouseup', e => {player.shootON = false;});
