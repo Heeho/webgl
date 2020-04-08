@@ -24,7 +24,7 @@ function main() {
 	var image = new Image();
 	
 	//image.crossOrigin = 'anonymous';
-	image.src = 'res/image.PNG';
+	image.src = 'res/image.png';
 	
 	image.addEventListener('load', function() {
 		gl.bindTexture(gl.TEXTURE_2D, texture);
