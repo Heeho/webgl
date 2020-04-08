@@ -19,16 +19,33 @@ function main() {
 	var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 
 	var texture = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
-
-	var image = new Image();
-	image.src = 'res/image.PNG';
-	image.addEventListener('load', function() {
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-		gl.generateMipmap(gl.TEXTURE_2D);
-	});
+	gl.bindTexture(gl.TEXTURE_2D, texture);	
+		const level = 0;
+		const internalFormat = gl.LUMINANCE;
+		const width = 4;
+		const height = 2;
+		const border = 0;
+		const format = gl.LUMINANCE;
+		const type = gl.UNSIGNED_BYTE;
+		const data = new Uint8Array([
+			128, 64, 128, 64,
+			64, 128, 64, 128,
+		]);
+		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, format, type, data);
+	
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	
+	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
+	//var image = new Image();
+	//image.src = 'res/image.PNG';
+	//image.addEventListener('load', function() {
+	//	gl.bindTexture(gl.TEXTURE_2D, texture);
+	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	//	gl.generateMipmap(gl.TEXTURE_2D);
+	//});
 	
 	var positionBuffer = gl.createBuffer();	
 	//var colorBuffer = gl.createBuffer();
@@ -50,14 +67,14 @@ function main() {
 	
 	var currentX, currentY, nextX, nextY;
 	var controls = canvas.getContext('2d');
-	var border = canvas.getBoundingClientRect();
+	var borderXY = canvas.getBoundingClientRect();
 	
 	//separated to controls.js
 	canvas.addEventListener('mousemove', e => {
-		nextX = e.clientX - border.left;
-		nextY = e.clientY - border.top;
-		if (nextX > currentX) {		rotation[1] += degToRad(3);} 
-		else if (nextX < currentX) {rotation[1] -= degToRad(3);}		
+		nextX = e.clientX - borderXY.left;
+		nextY = e.clientY - borderXY.top;
+		if (nextX > currentX) {		rotation[2] += degToRad(3);} 
+		else if (nextX < currentX) {rotation[2] -= degToRad(3);}		
 		if (nextY > currentY) {		rotation[0] -= degToRad(3);} 
 		else if (nextY < currentY) {rotation[0] += degToRad(3);}
 		currentX = nextX;
@@ -122,7 +139,7 @@ function main() {
 
 		var primitiveType = gl.TRIANGLES;
 		var offset = 0;
-		var count = 4 * 3;
+		var count = 22 * 3;
 		
 		gl.drawArrays(primitiveType, offset, count);
 		
@@ -151,7 +168,7 @@ function setGeometry(gl) {
 			3, 0, 0,
 			1, -1, 2,
 			0, -1, -2,
-/*
+
 			//hood
 			-1, -1, 2,
 			0, -1, -2,
@@ -232,7 +249,7 @@ function setGeometry(gl) {
 			
 			1, 1, 0,
 			1, 0, 4,
-			1, 0, 6,	*/							
+			1, 0, 6,							
 		]),
 		gl.STATIC_DRAW
 	);
@@ -343,7 +360,79 @@ function setTexcoords(gl) {
 
 			0, 1,
 			1, 1,
-			1, 0,			
+			1, 0,	
+
+			0, 0,
+			0, 1,
+			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,		
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 0,
+			0, 1,
+			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,		
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 0,
+			0, 1,
+			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,		
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 0,
+			0, 1,
+			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,		
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 1,
+			1, 1,
+			1, 0,
+
+			0, 0,
+			0, 1,
+			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,					
 		]),
 		gl.STATIC_DRAW
 	);
