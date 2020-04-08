@@ -85,9 +85,9 @@ function main() {
 			var offset = 0;
 			gl.vertexAttribPointer(
 				positionLocation, size, type, normalize, stride, offset);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);		
+	
 		gl.enableVertexAttribArray(texcoordLocation);
+		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
 			var size = 2;
 			var type = gl.FLOAT;
 			var normalize = false;
