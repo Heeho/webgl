@@ -33,14 +33,14 @@ function main() {
 	});
 	
 	var positionBuffer = gl.createBuffer();	
-	var colorBuffer = gl.createBuffer();
+	//var colorBuffer = gl.createBuffer();
 	var textureBuffer = gl.createBuffer();
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
 	setGeometry(gl);	
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-	setColors(gl);	
+	//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+	//setColors(gl);	
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
 	setTexcoords(gl);
@@ -88,15 +88,15 @@ function main() {
 			gl.vertexAttribPointer(
 				positionLocation, size, type, normalize, stride, offset);
 
-		gl.enableVertexAttribArray(colorLocation);
-		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-			var size = 3;
-			var type = gl.UNSIGNED_BYTE;
-			var normalize = true;
-			var stride = 0;
-			var offset = 0;
-			gl.vertexAttribPointer(
-				colorLocation, size, type, normalize, stride, offset);
+		//gl.enableVertexAttribArray(colorLocation);
+		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+		//	var size = 3;
+		//	var type = gl.UNSIGNED_BYTE;
+		//	var normalize = true;
+		//	var stride = 0;
+		//	var offset = 0;
+		//	gl.vertexAttribPointer(
+		//		colorLocation, size, type, normalize, stride, offset);
 			
 		var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		var zNear = 1;
