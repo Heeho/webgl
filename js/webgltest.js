@@ -16,16 +16,14 @@ function main() {
 	var positionLocation = gl.getAttribLocation(program, 'a_position');	
 	var colorLocation = gl.getAttribLocation(program, 'a_color');
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-	var textureLocation = gl.getAttribLocation(program, 'a_texcoord');
+	var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 
 	var texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
+
 	var image = new Image();
-	
-	//image.crossOrigin = 'anonymous';
 	image.src = 'res/image.PNG';
-	
 	image.addEventListener('load', function() {
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -42,7 +40,7 @@ function main() {
 	//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 	//setColors(gl);	
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
 	setTexcoords(gl);
 
 	var translation = [0, 0, -350];									// = [obj.velocity[0], obj.velocity[1], obj.velocity[2]]
@@ -88,6 +86,16 @@ function main() {
 			gl.vertexAttribPointer(
 				positionLocation, size, type, normalize, stride, offset);
 
+		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);		
+		gl.enableVertexAttribArray(texcoordLocation);
+			var size = 2;
+			var type = gl.FLOAT;
+			var normalize = false;
+			var stride = 0;
+			var offset = 0;
+			gl.vertexAttribPointer(
+				texcoordLocation, size, type, normalize, stride, offset);
+				
 		//gl.enableVertexAttribArray(colorLocation);
 		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		//	var size = 3;
@@ -340,9 +348,4 @@ function setTexcoords(gl) {
 	);
 }
 
-function requestCORSIfNotSameOrigin(img, url) {
-  if ((new URL(url)).origin !== window.location.origin) {
-    img.crossOrigin = '';
-  }
-}
 main();
