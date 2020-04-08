@@ -242,7 +242,7 @@ function setColors(gl) {
 	gl.bufferData(
 		gl.ARRAY_BUFFER,
 		new Uint8Array([
-		//front wings
+		/*//front wings
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
@@ -256,7 +256,7 @@ function setColors(gl) {
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
-		/*//hood
+		//hood
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
@@ -334,28 +334,7 @@ function setTexcoords(gl) {
 			1, 0,
 			0, 1,
 			1, 1,
-			1, 0,
-			
-			0, 0,
-			0, 1,
-			1, 0,
-			0, 1,
-			1, 1,
-			1, 0,	
-
-			0, 0,
-			0, 1,
-			1, 0,
-			0, 1,
-			1, 1,
-			1, 0,
-			
-			0, 0,
-			0, 1,
-			1, 0,
-			0, 1,
-			1, 1,
-			1, 0,				
+			1, 0,			
 		]),
 		gl.STATIC_DRAW
 	);
