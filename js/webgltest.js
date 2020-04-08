@@ -328,7 +328,7 @@ function setColors(gl) {
 function setTexcoords(gl) {
 	gl.bufferData (
 		gl.ARRAY_BUFFER,
-		new Uint8Array([
+		new Float32Array([
 			0, 0,
 			0, 1,
 			1, 0,
