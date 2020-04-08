@@ -122,7 +122,7 @@ function main() {
 
 		var primitiveType = gl.TRIANGLES;
 		var offset = 0;
-		var count = 2 * 3;
+		var count = 4 * 3;
 		
 		gl.drawArrays(primitiveType, offset, count);
 		
@@ -134,15 +134,7 @@ function setGeometry(gl) {
 	gl.bufferData(
 		gl.ARRAY_BUFFER, 
 		new Float32Array([
-			0,0,0,
-			5,0,0,
-			0,5,0,
-			
-			5,0,0,
-			5,5,0,
-			0,5,0,
-			
-			/*//front wings
+			//front wings
 			-1, 0, 6,
 			-3, 0, 0,
 			-1, -1, 2,
@@ -159,7 +151,7 @@ function setGeometry(gl) {
 			3, 0, 0,
 			1, -1, 2,
 			0, -1, -2,
-
+/*
 			//hood
 			-1, -1, 2,
 			0, -1, -2,
@@ -340,6 +332,15 @@ function setTexcoords(gl) {
 			0, 0,
 			0, 1,
 			1, 0,
+			
+			0, 1,
+			1, 1,
+			1, 0,		
+
+			0, 1,
+			1, 1,
+			1, 0,
+
 			0, 1,
 			1, 1,
 			1, 0,			
