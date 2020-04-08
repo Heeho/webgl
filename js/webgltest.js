@@ -114,7 +114,7 @@ function main() {
 
 		var primitiveType = gl.TRIANGLES;
 		var offset = 0;
-		var count = 4 * 3;
+		var count = 2 * 3;
 		
 		gl.drawArrays(primitiveType, offset, count);
 		
