@@ -126,7 +126,15 @@ function setGeometry(gl) {
 	gl.bufferData(
 		gl.ARRAY_BUFFER, 
 		new Float32Array([
-			//front wings
+			0,0,0,
+			5,0,0,
+			0,5,0,
+			
+			5,0,0,
+			5,5,0,
+			0,5,0,
+			
+			/*//front wings
 			-1, 0, 6,
 			-3, 0, 0,
 			-1, -1, 2,
@@ -143,7 +151,7 @@ function setGeometry(gl) {
 			3, 0, 0,
 			1, -1, 2,
 			0, -1, -2,
-			/*
+
 			//hood
 			-1, -1, 2,
 			0, -1, -2,
