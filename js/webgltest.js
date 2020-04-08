@@ -16,17 +16,35 @@ function main() {
 	var positionLocation = gl.getAttribLocation(program, 'a_position');	
 	var colorLocation = gl.getAttribLocation(program, 'a_color');
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
+	var textureLocation = gl.getAttribLocation(program, 'a_texcoord');
+
+	var texture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
+	var image = new Image();
+	
+	//image.crossOrigin = 'anonymous';
+	image.src = 'res/image.png';
+	
+	image.addEventListener('load', function() {
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+		gl.generateMipmap(gl.TEXTURE_2D);
+	});
 	
 	var positionBuffer = gl.createBuffer();	
 	var colorBuffer = gl.createBuffer();
+	var textureBuffer = gl.createBuffer();
 	
-	//for each obj in gameobjects
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
 	setGeometry(gl);	
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 	setColors(gl);	
-	
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+	setTexcoords(gl);
+
 	var translation = [0, 0, -350];									// = [obj.velocity[0], obj.velocity[1], obj.velocity[2]]
 	var rotation = [degToRad(180), degToRad(0), degToRad(0)];		// = [obj.rotation[0], obj.rotation[1], obj.rotation[2]] // theta, phi, gamma
 	var scale = [40, 40, 40];										// global scale?
@@ -56,7 +74,7 @@ function main() {
 		
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		gl.enable(gl.CULL_FACE);
+		//gl.enable(gl.CULL_FACE);
 		gl.enable(gl.DEPTH_TEST);
 		gl.useProgram(program);
 		
@@ -96,7 +114,7 @@ function main() {
 
 		var primitiveType = gl.TRIANGLES;
 		var offset = 0;
-		var count = 22 * 3;
+		var count = 4 * 3;
 		
 		gl.drawArrays(primitiveType, offset, count);
 		
@@ -125,7 +143,7 @@ function setGeometry(gl) {
 			3, 0, 0,
 			1, -1, 2,
 			0, -1, -2,
-			
+			/*
 			//hood
 			-1, -1, 2,
 			0, -1, -2,
@@ -206,7 +224,7 @@ function setGeometry(gl) {
 			
 			1, 1, 0,
 			1, 0, 4,
-			1, 0, 6,								
+			1, 0, 6,	*/							
 		]),
 		gl.STATIC_DRAW
 	);
@@ -230,7 +248,7 @@ function setColors(gl) {
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
-		//hood
+		/*//hood
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
@@ -293,10 +311,37 @@ function setColors(gl) {
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
 		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
+		Math.random()*55,Math.random()*35,Math.random()*155,*/
+		]),
+		gl.STATIC_DRAW
+	);
+}	
+
+function setTexcoords(gl) {
+	gl.bufferData (
+		gl.ARRAY_BUFFER,
+		new Uint8Array([
+			0, 0,
+			0, 1,
+			1, 0,
+			0, 1,
+			1, 1,
+			1, 0,
+			
+			0, 0,
+			0, 1,
+			1, 0,
+			0, 1,
+			1, 1,
+			1, 0,		
 		]),
 		gl.STATIC_DRAW
 	);
 }
 
+function requestCORSIfNotSameOrigin(img, url) {
+  if ((new URL(url)).origin !== window.location.origin) {
+    img.crossOrigin = '';
+  }
+}
 main();
