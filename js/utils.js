@@ -11,6 +11,11 @@
 		for(var i = 0; i < o.draftnodes.length; i++) {
 			o.nodes[i] = o.draftnodes[i] * o.size;
 		}
+		if(o.drafthitbox !== undefined) {
+			for(var i = 0; i < o.drafthitbox.length; i++) {
+				o.hitbox[i] = o.drafthitbox[i] * o.size;
+			}
+		}
 	}
 
 	var m4 = {
@@ -67,6 +72,9 @@
 				}
 			}		
 			return c;
+		},
+		mv: function (m, v) {
+			return true;
 		},
 		inverse: function(m) {
 			var m00 = m[0 * 4 + 0];

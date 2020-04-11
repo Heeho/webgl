@@ -18,12 +18,12 @@ function main() {
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
 	var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 
-	var texture = gl.createTexture();
+	const texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);	
 		const level = 0;
 		const internalFormat = gl.LUMINANCE;
-		const width = 4;
-		const height = 2;
+		const width = 4
+		const height = 2
 		const border = 0;
 		const format = gl.LUMINANCE;
 		const type = gl.UNSIGNED_BYTE;
@@ -37,6 +37,24 @@ function main() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	
+	const tex = gl.createTexture();	
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+	{
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	}
+	
+	const fbuffer = gl.createFramebuffer();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fbuffer);
+	const attachmentPoint = gl.COLOR_ATTACHMENT0;
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, tex, level);
+
+
+
 	
 	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
 	//var image = new Image();
@@ -113,6 +131,8 @@ function main() {
 			gl.vertexAttribPointer(
 				texcoordLocation, size, type, normalize, stride, offset);
 				
+		
+		
 		//gl.enableVertexAttribArray(colorLocation);
 		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		//	var size = 3;
