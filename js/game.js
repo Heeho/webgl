@@ -4,7 +4,44 @@
 		if(!gl) {
 			window.alert('Absolutely no WebGL here!');
 		}
-		
+		/*
+		gjk3d(
+			{
+				currentHitbox: [
+					0,0,1,
+					0,0,3,
+					2,0,1,
+					2,0,3,
+					0,2,1,
+					0,2,3,
+					2,2,3,
+					2,2,1,
+				],
+				state: [
+					1,1,1,1,
+					1,1,1,1,
+					1,1,1,1,
+					1,1,2,1,
+				],		
+			},{
+				currentHitbox: [
+					1,1,2+1,
+					1,1,4+1,
+					3,1,2+1,
+					3,1,4+1,
+					1,3,2+1,
+					1,3,4+1,
+					3,3,4+1,
+					3,3,2+1,
+				],
+				state: [
+					1,1,1,1,
+					1,1,1,1,
+					1,1,1,1,
+					2,2,3,1,
+				],
+			});
+		*/
 		var vertexShaderSource = document.getElementById('vertex-shader').text;
 		var fragmentShaderSource = document.getElementById('fragment-shader').text;	
 		var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -61,10 +98,10 @@
 		requestAnimationFrame(start);
 		
 		function start() {
-			render(gameObjects);
+			render(gameObjects);			
 			realign(camera);
-			collide(gameObjects);
 			process(gameObjects);
+			
 			requestAnimationFrame(start);
 		}
 		
@@ -96,8 +133,7 @@
 					var normalize = false;
 					var stride = 0;
 					var offset = 0;
-					gl.vertexAttribPointer(
-						positionLocation, size, type, normalize, stride, offset);
+					gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
 
 				gl.enableVertexAttribArray(colorLocation);
 				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -107,8 +143,7 @@
 					var normalize = true;
 					var stride = 0;
 					var offset = 0;
-					gl.vertexAttribPointer(
-						colorLocation, size, type, normalize, stride, offset);			
+					gl.vertexAttribPointer(colorLocation, size, type, normalize, stride, offset);			
 			
 				var matrix = viewProjectionMatrix;
 				matrix = m4.multiply(matrix, o.state);

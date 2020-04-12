@@ -20,9 +20,9 @@
 		this.rotation = [3, 0, 0];
 		this.exists = true;
 		this.size = 10;
-		this.currenthitbox = [];
+		this.currentHitbox = [];
 		this.hitbox = [];
-		this.drafthitbox = [
+		this.draftHitbox = [
 			-1, 0, 6,
 			1, 0, 6,
 			
@@ -224,6 +224,9 @@
 		this.list = list;
 		this.list.push(this);
 	}
+	Fighter.prototype.onCollision = function(o) {
+		this.state = v3.add(v3.multiply(this.velocity, -1);
+	}
 	Fighter.prototype.act = function() {
 		if(this.turnLeft) {
 			this.rotation[1] = -this.rotationSpeed[1];
@@ -242,7 +245,6 @@
 			this.brake();
 		}
 	}
-
 	Fighter.prototype.direction = function() {
 		return this.state.slice(8,11);
 	} 
@@ -270,9 +272,9 @@
 		this.state = s;
 		this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 100));
 		this.size = 5;
-		this.currenthitbox = [];
+		this.currentHitbox = [];
 		this.hitbox = [];
-		this.drafthitbox = [
+		this.draftHitbox = [
 			0,	0,	0,
 			1,	0,	6,
 			-1,	0,	6,			
@@ -297,6 +299,7 @@
 			//1, 255,  1,
 		];
 		this.TTL = 15;
+		this.damage = 1;
 		this.exists = true;
 		this.state = m4.translate(this.state, 0, 0, o.size*6);
 		setNodes(this);
@@ -307,6 +310,17 @@
 		if(this.TTL-- == 0) {
 			this.exists = false;
 		}
+	}
+	Bolt.prototype.onCollision = function(o) {
+		this.exists = false;
+		if(o.hitpoints !== undefined) {
+			o.hitpoints -= this.damage;
+			if(o.hitpoints == 0) {o.exists = false;}
+			console.log('hitpoints left: ', o.hitpoints);
+		}
+	}
+	Bolt.prototype.location = function() {
+		return this.state.slice(12,15);
 	}
 	
 	function Throttle(o) {

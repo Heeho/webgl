@@ -17,9 +17,10 @@
 		this.velocity = [0, 0, 0,];
 		this.acceleration = 1;
 		this.size = 10000;
-		this.currenthitbox = [];
+		this.hitpoints = 999;
+		this.currentHitbox = [];
 		this.hitbox = [];
-		this.drafthitbox = [
+		this.draftHitbox = [
 			0,-.5,	-2,
 			0,	-1,	0, 				
 			-1,	0,	0,
@@ -87,8 +88,15 @@
 		this.state = s;
 		this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 5));
 		this.size = 10;
-		this.nodes = [];
+		this.currentHitbox = [];
 		this.hitbox = [];
+		this.draftHitbox = [
+			 0,  	0,	  2,
+			 0.25,  0,	  3,
+			-0,25,  0, 	  3,
+		];
+		this.nodes = [];
+
 		this.draftnodes = [
 			 0,  	0,	  2,
 			 0.25,  0,	  3,
@@ -125,10 +133,11 @@
 		this.rotationSpeed = [6, 0.15, 6];
 		this.rotation = [3, 0, 0];
 		this.exists = true;
-		this.size = 10;
-		this.currenthitbox = [];
+		this.size = 5;
+		this.hitpoints = 1;
+		this.currentHitbox = [];
 		this.hitbox = [];
-		this.drafthitbox = [
+		this.draftHitbox = [
 			-1, 0, 6,
 			1, 0, 6,
 			

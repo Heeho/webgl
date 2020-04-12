@@ -11,9 +11,9 @@
 		for(var i = 0; i < o.draftnodes.length; i++) {
 			o.nodes[i] = o.draftnodes[i] * o.size;
 		}
-		if(o.drafthitbox !== undefined) {
-			for(var i = 0; i < o.drafthitbox.length; i++) {
-				o.hitbox[i] = o.drafthitbox[i] * o.size;
+		if(o.draftHitbox !== undefined) {
+			for(var i = 0; i < o.draftHitbox.length; i++) {
+				o.hitbox[i] = o.draftHitbox[i] * o.size;
 			}
 		}
 	}
@@ -73,8 +73,19 @@
 			}		
 			return c;
 		},
-		mv: function (m, v) {
-			return true;
+		m4v3: function (m4, v3) {
+			var d = 4;
+			var r = [0,0,0,0,];
+			var v4 = v3.slice();
+			v4.push(1);
+
+			for(var i = 0; i < d; i++) {
+				for(var j = 0; j < d; j++) {
+					r[i] += m4[i + d*j] * v4[j];
+				}
+			}
+			
+			return r.slice(0,d);
 		},
 		inverse: function(m) {
 			var m00 = m[0 * 4 + 0];
@@ -228,7 +239,7 @@
 			];
 		},
 		dot: function(a, b) {
-			return [a[0] * b[0], a[1] * b[1], a[2] * b[2]];
+			return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 		},
 		cross: function(a, b) {
 			return [
