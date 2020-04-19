@@ -221,7 +221,7 @@
 	
 	function epa3d(hitboxes, simplex, normals) {
 		
-		var tolerance = 10;
+		var tolerance = 1;
 		var loopCount = 0;
 		var faces = [];
 		

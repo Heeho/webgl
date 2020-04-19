@@ -1,7 +1,14 @@
 'use strict';
-	function drafthitbox(model) {
-		switch(model) {
+	function Model(name) {
+		this.drafthitbox = drafthitbox(name);
+		this.draftnodes = draftnodes(name);
+		this.colors = colors(name);
+	}
+	
+	function drafthitbox(name) {
+		switch(name) {
 		case 'fighter':
+		case 'interceptor':
 			return [
 				-1, 0, 6,
 				1, 0, 6,
@@ -33,9 +40,11 @@
 			]; break;
 		}
 	}
-	function draftnodes(model) {
-		switch(model) {
+	
+	function draftnodes(name) {
+		switch(name) {
 		case 'fighter':
+		case 'interceptor':
 			return [
 				//front wings
 				-1, 0, 6,
@@ -186,8 +195,8 @@
 		}
 	}
 	
-	function colors(model) {
-		switch(model) {
+	function colors(name) {
+		switch(name) {
 		case 'fighter':
 			return [
 				//front wings
@@ -314,6 +323,87 @@
 				Math.random()*155, Math.random()*155,  Math.random()*100,
 				Math.random()*155, Math.random()*155,  Math.random()*100,
 				Math.random()*155, Math.random()*155,  Math.random()*100,		
+			]; break;
+		case 'interceptor':
+			return [
+				//front wings
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//sides       1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//hood        1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//buttocks		1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//front		  1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//upper jaws	1	
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//butt        1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//bottom      1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//bottom sides1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//bottom wings1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//bottom front1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				//bottom jaws 1
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
+				Math.random()*155,Math.random()*35,Math.random()*55,
 			]; break;
 		}
 	}

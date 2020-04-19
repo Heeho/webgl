@@ -62,9 +62,9 @@
 		
 		function start() {
 			render(gameObjects);			
-			realign(camera);
-			process(gameObjects);
 			//realign(camera);
+			process(gameObjects);
+			realign(camera);
 			requestAnimationFrame(start);
 		}
 		

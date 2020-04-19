@@ -81,223 +81,36 @@
 	}
 	
 	function Interceptor(o) {
+		this.exists = true;		
 		this.isPlayer = false;
+		
 		this.turnLeft = false;
 		this.turnRight = false;
 		this.accelerateON = false;
+		this.brakesON = false;
 		this.shootON = false;
 		this.shootTimer = 0;
 		this.shootDelay = 50;
-		this.brakesON = false;
+
 		var s = o.state.slice();
 		this.state = s;
+		
 		this.velocity = [0, 0, 0];
 		this.acceleration = 4;
 		this.rotationSpeed = [6, 0.15, 6];
 		this.rotation = [3, 0, 0];
-		this.exists = true;
+
 		this.size = 5;
 		this.hitpoints = 1;
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = [
-			-1, 0, 6,
-			1, 0, 6,
-			
-			-1, -1, 2,
-			1, -1, 2,
-			
-			-3, 0, 0,
-			3, 0, 0,
-			
-			-1, 1, 0,
-			1, 1, 0,
-			
-			2, 0, -2,
-			-2, 0, -2,	
-		];
 		this.nodes = [];
-		this.draftnodes = [
-			//front wings
-			-1, 0, 6,
-			-3, 0, 0,
-			-1, -1, 2,
-			
-			1, 0, 6,
-			1, -1, 2,
-			3, 0, 0,
-			
-			//sides
-			-3, 0, 0,
-			0, -1, -2,
-			-1, -1, 2,
-						
-			3, 0, 0,
-			1, -1, 2,
-			0, -1, -2,
-			
-			//hood
-			-1, -1, 2,
-			0, -1, -2,
-			1, -1, 2,
-			
-			//buttocks
-			0, -1, -2,
-			-3, 0, 0,
-			-2, 0, -2,
-						
-			0, -1, -2,
-			2, 0, -2,
-			3, 0, 0,
-			
-			//front
-			-1, 0, 4,
-			-1, -1, 2,
-			1, 0, 4,
-			
-			1, 0, 4,
-			-1, -1, 2,
-			1, -1, 2,
-			
-			//upper jaws
-			-1, 0, 4,
-			-1, 0, 6,
-			-1, -1, 2,
-			
-			1, 0, 4,
-			1, -1, 2,
-			1, 0, 6,
-			
-			//butt
-			-2, 0, -2,		
-			2, 0, -2,
-			0, -1, -2,
-			
-			//bottom
-			-1, 1, 0,
-			2, 0, -2,
-			-2, 0, -2,
-			
-			-1, 1, 0,
-			1, 1, 0,
-			2, 0, -2,
-			
-			//bottom sides
-			-1, 1, 0,
-			-2, 0, -2,
-			-3, 0, 0,
-			
-			1, 1, 0,
-			3, 0, 0,
-			2, 0, -2,
-			
-			//bottom wings
-			-1, 1, 0,
-			-3, 0, 0,
-			-1, 0, 6,
-			
-			1, 1, 0,
-			1, 0, 6,
-			3, 0, 0,
-			
-			//bottom front
-			-1, 1, 0,
-			-1, 0, 4,
-			1, 0, 4,
-			
-			1, 1, 0,
-			-1, 1, 0,
-			1, 0, 4,	
-			
-			//bottom jaws
-			-1, 1, 0,
-			-1, 0, 6,
-			-1, 0, 4,
-			
-			1, 1, 0,
-			1, 0, 4,
-			1, 0, 6,		
-		];
-		this.colors = [
-			//front wings
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//sides       1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//hood        1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//buttocks		1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//front		  1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//upper jaws	1	
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//butt        1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//bottom      1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//bottom sides1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//bottom wings1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//bottom front1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			//bottom jaws 1
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-			Math.random()*155,Math.random()*35,Math.random()*55,
-		];
+		
+		var model = new Model('interceptor');
+		this.draftHitbox = model.drafthitbox;
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;
+		
 		setNodes(this);
 		this.list = o.list;
 		o.list.push(this);

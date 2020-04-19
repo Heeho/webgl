@@ -33,9 +33,11 @@
 		this.currentHitbox = [];
 		this.hitbox = [];
 		this.nodes = [];
-		this.draftHitbox = drafthitbox('fighter');
-		this.draftnodes = draftnodes('fighter');
-		this.colors = colors('fighter');
+		
+		var model = new Model('fighter');
+		this.draftHitbox = model.drafthitbox;
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;
 		
 		setNodes(this);
 		this.list = list;
@@ -50,7 +52,7 @@
 		
 		this.energy += this.energy < this.energyCap ? this.energyGain : this.energy > this.energyCap ? -1 : 0;
 		
-		console.log('energy: ', this.energy);
+		//console.log('energy: ', this.energy);
 		
 		if(this.turnLeft) {
 			this.rotation[1] = -this.rotationSpeed[1];
@@ -101,9 +103,11 @@
 		this.currentHitbox = [];
 		this.hitbox = [];
 		this.nodes = [];
-		this.draftHitbox = drafthitbox('bolt');
-		this.draftnodes = draftnodes('bolt');
-		this.colors = colors('bolt');
+		
+		var model = new Model('bolt');
+		this.draftHitbox = model.drafthitbox;
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;
 		
 		this.TTL = 15;
 		this.damage = 1;
@@ -121,9 +125,10 @@
 	Bolt.prototype.onCollision = function(o, pen) {
 		this.exists = false;
 		if(o.hitpoints !== undefined) {
+			//spawn visual effect on hit
 			o.hitpoints -= this.damage;
-			if(o.hitpoints == 0) {o.exists = false;}
-			console.log('hitpoints left: ', o.hitpoints);
+			o.exists = o.hitpoints <= 0 ? false : true;
+			//console.log('hitpoints left: ', o.hitpoints);
 		}
 	}
 	Bolt.prototype.location = function() {
@@ -138,8 +143,11 @@
 		this.state = s;
 		this.size = 10;
 		this.nodes = [];
-		this.draftnodes = draftnodes('throttle');
-		this.colors = colors('throttle');
+		
+		var model = new Model('throttle');
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;
+		
 		this.TTL = 20;
 		this.fadeRatio = 0.7;
 
