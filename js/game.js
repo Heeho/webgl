@@ -133,9 +133,10 @@
 					
 					var cameraPosition = v3.add(ploc, v3.multiply(v3.normalize(lineOfFire), distance));
 					var target = eloc;
-					var up = [0, 1, 0];
-			
-					camera.cameraMatrix = m4.lookAt(cameraPosition, target, up);
+					var currentCameraPosition = camera.cameraMatrix.slice(12,15);
+					//console.log(currentCameraPosition);
+					var nextCameraPosition = v3.add(currentCameraPosition, v3.multiply(v3.substract(cameraPosition, currentCameraPosition), camera.speed));
+					camera.cameraMatrix = m4.lookAt(nextCameraPosition, target, camera.up);
 					
 					break;
 				case 1: 

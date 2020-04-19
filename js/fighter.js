@@ -118,9 +118,7 @@
 		o.list.push(this);
 	}
 	Bolt.prototype.act = function() {
-		if(this.TTL-- == 0) {
-			this.exists = false;
-		}
+		if(this.TTL-- == 0) {this.exists = false;}
 	}
 	Bolt.prototype.onCollision = function(o, pen) {
 		this.exists = false;
@@ -141,6 +139,8 @@
 		
 		var s = o.state.slice();
 		this.state = s;
+		this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), -o.acceleration));
+		
 		this.size = 10;
 		this.nodes = [];
 		
@@ -149,7 +149,7 @@
 		this.colors = model.colors;
 		
 		this.TTL = 20;
-		this.fadeRatio = 0.7;
+		this.fadeRatio = 0.85;
 
 		this.state = m4.translate(this.state, 0, 0, -o.size*2);
 		setNodes(this);
@@ -157,11 +157,8 @@
 		o.list.push(this);
 	} 
 	Throttle.prototype.act = function() {
-		if(this.TTL-- == 0 || this.size == 0) {
-			this.exists = false;
-		} else {
+		if(this.TTL-- == 0 || this.size == 0) {this.exists = false;} else {
 			this.size *= this.fadeRatio;
-			this.state = m4.translate(this.state, 0, 0, -3);
 			setNodes(this);
 		}
 	}

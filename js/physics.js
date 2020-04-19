@@ -5,7 +5,7 @@
 		for(var i = 0; i < o.length; i++) {
 			if(!o[i].exists) {o.splice(i, 1);} else {
 				if(o[i].act !== undefined) {o[i].act();}
-				move(o[i]);			
+				move(o[i]);		
 			}
 		}
 	}
@@ -190,7 +190,7 @@
 				}
 				
 				if(collision) {
-					console.log('collision!'); 
+					//console.log('collision!'); 
 					//return collision;
 					var penetration = epa3d([hitbox1, hitbox2],simplex,[n1, n2, n3, n4]);
 					return penetration;
@@ -272,7 +272,7 @@
 	
 			//if none (or in tolerance margin), get this normal * distance as penetration, else check other faces 
 			measure = v3.dot(v3.substract(px, faces[0].vertices[0]), dx);
-			console.log(measure);
+			//console.log(measure);
 			if(measure < tolerance) {
 				penetration = v3.multiply(dx, lx);
 				//console.log(penetration);

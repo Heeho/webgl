@@ -1,7 +1,9 @@
 'use strict';
 	function Camera(gl) {
 		//this.zoom = 100;
+		this.up = [0, 1, 0];
 		this.mode = 0;
+		this.speed = 0.6;
 		this.scale = [1, 1, 1];					// global scale?
 		this.fieldOfViewRadians = degToRad(55);
 		this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;

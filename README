@@ -14,8 +14,8 @@ LEFT <- q       e -> RIGHT
             v
         B R A K E			
 
-            S
-      unlocks camera
+            s
+       Camera mode
 
           PITCH
             ^
@@ -32,4 +32,5 @@ Done so far:
     - mirror-bumping on collision;
 4) Gameplay:
     - limited energy to accelerate/brake/shoot,
-    - damage on projectile/object collision;	
+    - damage on projectile/object collision,
+	- camera (somewhat) smooth movement;
