@@ -7,8 +7,12 @@ Controls:
        T H R U S T
             ^
             :
-LEFT <- Q   W   E -> RIGHT	 
-
+            w
+LEFT <- q       e -> RIGHT	 
+		  Space
+            :
+            v
+        B R A K E			
 
           PITCH
             ^
@@ -16,3 +20,13 @@ LEFT <- Q   W   E -> RIGHT
   TILT <- mouse ->
             |
             v
+
+Done so far:
+1) Matrix/vector math for rotation/movement;
+2) Collision detection using GJK+EPA and custom hitboxes;
+3) Physics:
+    - unrestricted acceleration, 
+    - mirror-bumping on collision;
+4) Gameplay:
+    - limited energy to accelerate/brake/shoot,
+    - damage on projectile/object collision;	
