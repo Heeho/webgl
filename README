@@ -3,16 +3,16 @@ Static website with a WebGL spaceshooter game in it.
 Mobile/touchscreen not supported (yet).
 
 Controls:
-|
-|       T H R U S T
-|            ^
-|            :
-|LEFT <- Q   W   E -> RIGHT	 
-|
-|
-|          PITCH
-|            ^
-|            |
-|  TILT <- mouse ->
-|            |
-|            v
+
+       T H R U S T
+            ^
+            :
+LEFT <- Q   W   E -> RIGHT	 
+
+
+          PITCH
+            ^
+            |
+  TILT <- mouse ->
+            |
+            v
