@@ -1,1 +1,19 @@
-Static website WebGL playground. 3D collision detection upcoming.
+Static website with a WebGL spaceshooter game in it.
+
+Mobile/touchscreen not supported (yet).
+
+Controls:
+
+		T H R U S T
+			 ^
+			 :
+	 		 W
+			 
+LEFT <- Q		  E -> RIGHT
+
+		   PITCH
+	 		 ^
+	  		 |
+   TILT <- mouse ->
+			 |
+			 v
