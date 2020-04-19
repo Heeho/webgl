@@ -38,6 +38,12 @@
 				-1,	0,	0,
 				1,	0,	0,
 			]; break;
+		case 'blaster':
+			return [
+				 0,  	0,	  2,
+				 0.25,  0,	  3,
+				-0,25,  0, 	  3,
+			]; break;
 		}
 	}
 	
@@ -192,6 +198,12 @@
 				0,	-1,	0, 				
 				1,	0,	0,
 			]; break;
+		case 'blaster':
+			return [
+				 0,  	0,	  2,
+				 0.25,  0,	  3,
+				-0,25,  0, 	  3,
+			]; break;
 		}
 	}
 	
@@ -323,6 +335,12 @@
 				Math.random()*155, Math.random()*155,  Math.random()*100,
 				Math.random()*155, Math.random()*155,  Math.random()*100,
 				Math.random()*155, Math.random()*155,  Math.random()*100,		
+			]; break;
+		case 'blaster':
+			return [
+				255,  1, 1,
+				255,  1, 1,
+				255,  1, 1,
 			]; break;
 		case 'interceptor':
 			return [

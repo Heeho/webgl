@@ -314,6 +314,7 @@
 				
 				faces.shift();
 				//console.log(faces);
-			}				
+			}			
 		}		
+		return penetration;	
 	}

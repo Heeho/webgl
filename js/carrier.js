@@ -1,30 +1,38 @@
 'use strict';
 	function Carrier(list) {
+		this.exists = true;
 		this.isPlayer = false;
+		
 		this.turnLeft = false;
 		this.turnRight = false;
 		this.accelerateON = false;
+		this.brakesON = false;
 		this.shootON = false;
 		this.shootTimer = 0;
 		this.shootDelay = 5;
-		this.brakesON = false;
+
 		this.state = [
 			1,	0,	0,	0,
 			0,	1,	0,	0,
 			0,	0,	1,	0,
 			0,	0,-10000,1,
 		];
+		
 		this.velocity = [0, 0, 0,];
 		this.acceleration = 1;
+		
 		this.size = 10000;
 		this.hitpoints = 999;
+		
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = drafthitbox('carrier');
 		this.nodes = [];
-		this.draftnodes = draftnodes('carrier');
-		this.colors = colors('carrier');
-		this.exists = true;
+		
+		var model = new Model('carrier');
+		this.draftHitbox = model.drafthitbox;
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;		
+
 		setNodes(this);
 		this.list = list;
 		this.list.push(this);
@@ -47,31 +55,24 @@
 	}
 	
 	function Blaster(o) {
+		this.exists = true;
 		var s = o.state.slice();
 		this.state = s;
 		this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 5));
+		
 		this.size = 10;
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = [
-			 0,  	0,	  2,
-			 0.25,  0,	  3,
-			-0,25,  0, 	  3,
-		];
 		this.nodes = [];
 
-		this.draftnodes = [
-			 0,  	0,	  2,
-			 0.25,  0,	  3,
-			-0,25,  0, 	  3,
-		];
-		this.colors = [
-			255,  1, 1,
-			255,  1, 1,
-			255,  1, 1,
-		];
+		var model = new Model('Blaster');
+		this.draftHitbox = model.drafthitbox;
+		this.draftnodes = model.draftnodes;
+		this.colors = model.colors;
+		
 		this.TTL = 30;
-		this.exists = true;
+		this.damage = 20;
+		
 		setNodes(this);
 		this.list = o.list;
 		o.list.push(this);

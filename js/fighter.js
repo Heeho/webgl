@@ -128,7 +128,7 @@
 			//spawn visual effect on hit
 			o.hitpoints -= this.damage;
 			o.exists = o.hitpoints <= 0 ? false : true;
-			//console.log('hitpoints left: ', o.hitpoints);
+			console.log('hitpoints left: ', o.hitpoints);
 		}
 	}
 	Bolt.prototype.location = function() {
