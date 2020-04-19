@@ -1,13 +1,25 @@
 'use strict';
 	function Fighter(list) {
+		this.exists = true;
 		this.isPlayer = true;
+		
 		this.turnLeft = false;
 		this.turnRight = false;
 		this.accelerateON = false;
-		this.shootON = false;
-		this.shootTimer = 0;
-		this.shootDelay = 5;
 		this.brakesON = false;
+		
+		this.shootON = false;
+		
+		this.energyCap = 100;
+		this.energyGain = 2;
+		this.energy = this.energyCap;		
+		this.accelerateCost = 2;
+		this.brakesCost = 2;
+		this.shootCost = 15;	
+
+		this.rotationSpeed = [6, 0.15, 6];		
+		this.rotation = [3, 0, 0];		
+		
 		this.state = [
 			1,	0,	0,	0,
 			0,	1,	0,	0,
@@ -16,232 +28,46 @@
 		];
 		this.velocity = [0, 0, 0];
 		this.acceleration = 4;
-		this.rotationSpeed = [6, 0.15, 6];
-		this.rotation = [3, 0, 0];
-		this.exists = true;
+		
 		this.size = 10;
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = [
-			-1, 0, 6,
-			1, 0, 6,
-			
-			-1, -1, 2,
-			1, -1, 2,
-			
-			-3, 0, 0,
-			3, 0, 0,
-			
-			-1, 1, 0,
-			1, 1, 0,
-			
-			2, 0, -2,
-			-2, 0, -2,			
-		];
 		this.nodes = [];
-		this.draftnodes = [
-			//front wings
-			-1, 0, 6,
-			-3, 0, 0,
-			-1, -1, 2,
-			
-			1, 0, 6,
-			1, -1, 2,
-			3, 0, 0,
-			
-			//sides
-			-3, 0, 0,
-			0, -1, -2,
-			-1, -1, 2,
-						
-			3, 0, 0,
-			1, -1, 2,
-			0, -1, -2,
-			
-			//hood
-			-1, -1, 2,
-			0, -1, -2,
-			1, -1, 2,
-			
-			//buttocks
-			0, -1, -2,
-			-3, 0, 0,
-			-2, 0, -2,
-						
-			0, -1, -2,
-			2, 0, -2,
-			3, 0, 0,
-			
-			//front
-			-1, 0, 4,
-			-1, -1, 2,
-			1, 0, 4,
-			
-			1, 0, 4,
-			-1, -1, 2,
-			1, -1, 2,
-			
-			//upper jaws
-			-1, 0, 4,
-			-1, 0, 6,
-			-1, -1, 2,
-			
-			1, 0, 4,
-			1, -1, 2,
-			1, 0, 6,
-			
-			//butt
-			-2, 0, -2,		
-			2, 0, -2,
-			0, -1, -2,
-			
-			//bottom
-			-1, 1, 0,
-			2, 0, -2,
-			-2, 0, -2,
-			
-			-1, 1, 0,
-			1, 1, 0,
-			2, 0, -2,
-			
-			//bottom sides
-			-1, 1, 0,
-			-2, 0, -2,
-			-3, 0, 0,
-			
-			1, 1, 0,
-			3, 0, 0,
-			2, 0, -2,
-			
-			//bottom wings
-			-1, 1, 0,
-			-3, 0, 0,
-			-1, 0, 6,
-			
-			1, 1, 0,
-			1, 0, 6,
-			3, 0, 0,
-			
-			//bottom front
-			-1, 1, 0,
-			-1, 0, 4,
-			1, 0, 4,
-			
-			1, 1, 0,
-			-1, 1, 0,
-			1, 0, 4,	
-			
-			//bottom jaws
-			-1, 1, 0,
-			-1, 0, 6,
-			-1, 0, 4,
-			
-			1, 1, 0,
-			1, 0, 4,
-			1, 0, 6,		
-		];
-		this.colors = [
-			//front wings
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//sides
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//hood
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//buttocks		
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//front		
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//upper jaws		
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//butt
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//bottom
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//bottom sides
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//bottom wings
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//bottom front
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			//bottom jaws
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-			Math.random()*55,Math.random()*35,Math.random()*155,
-		];
+		this.draftHitbox = drafthitbox('fighter');
+		this.draftnodes = draftnodes('fighter');
+		this.colors = colors('fighter');
+		
 		setNodes(this);
 		this.list = list;
 		this.list.push(this);
 	}
-	Fighter.prototype.onCollision = function(o) {
-		this.state = v3.add(v3.multiply(this.velocity, -1);
+	Fighter.prototype.onCollision = function(o, pen) {
+		var pn = v3.normalize(pen);
+		var repulsion = v3.multiply(pn, (-this.acceleration - 2 * v3.dot(this.velocity, pn)));
+		this.velocity = v3.add(this.velocity, repulsion);
 	}
 	Fighter.prototype.act = function() {
+		
+		this.energy += this.energy < this.energyCap ? this.energyGain : this.energy > this.energyCap ? -1 : 0;
+		
+		console.log('energy: ', this.energy);
+		
 		if(this.turnLeft) {
 			this.rotation[1] = -this.rotationSpeed[1];
 		}
 		if(this.turnRight) {
 			this.rotation[1] = this.rotationSpeed[1];
 		}
-		if(this.accelerateON) {
+		if(this.accelerateON && this.energy > this.accelerateCost) {
+			this.energy -= this.accelerateCost;
 			this.accelerate();
 		}
-		if(this.shootON && this.shootTimer++ == this.shootDelay) {
+		if(this.shootON && this.energy >= this.shootCost) {
+			this.energy -= this.shootCost;
 			this.shoot();
-			this.shootTimer = 0;
 		}	
-		if(this.brakesON) {
+		if(this.brakesON && this.energy >= this.brakesCost) {
+			this.energy -= this.brakesCost;
 			this.brake();
 		}
 	}
@@ -253,54 +79,35 @@
 	}
 	Fighter.prototype.accelerate = function() {
 		this.velocity = v3.add(this.velocity, v3.multiply(this.direction(), this.acceleration));
-		//gameObjects.push(new Throttle(this));
 		var throttle = new Throttle(this);
 	} 
 	Fighter.prototype.brake = function() {
 		this.velocity = v3.multiply(this.velocity, 0.9);
-		//gameObjects.push(new Throttle(this));
 		var throttle = new Throttle(this);
 	} 		
 	Fighter.prototype.shoot = function() {
-		//gameObjects.push(new Bolt(this));
 		var bolt = new Bolt(this);
 	}
 
 	function Bolt(o) {
+		this.exists = true;
 		this.isPlayer = false;
+		
 		var s = o.state.slice();
 		this.state = s;
 		this.velocity = v3.add(o.velocity, v3.multiply(o.direction(), 100));
+		
 		this.size = 5;
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = [
-			0,	0,	0,
-			1,	0,	6,
-			-1,	0,	6,			
-		];
 		this.nodes = [];
-		this.draftnodes = [
-			0,	0,	0,
-			1,	0,	6,
-			-1,	0,	6,
-			
-			//0,	0,	0,
-			//-1,	0,	6,
-			//1,	0,	6,
-		];
-		this.colors = [
-			1, 255,  1,
-			1, 255,  1,
-			1, 255,  1,
-			
-			//1, 255,  1,
-			//1, 255,  1,
-			//1, 255,  1,
-		];
+		this.draftHitbox = drafthitbox('bolt');
+		this.draftnodes = draftnodes('bolt');
+		this.colors = colors('bolt');
+		
 		this.TTL = 15;
 		this.damage = 1;
-		this.exists = true;
+		
 		this.state = m4.translate(this.state, 0, 0, o.size*6);
 		setNodes(this);
 		this.list = o.list;
@@ -311,7 +118,7 @@
 			this.exists = false;
 		}
 	}
-	Bolt.prototype.onCollision = function(o) {
+	Bolt.prototype.onCollision = function(o, pen) {
 		this.exists = false;
 		if(o.hitpoints !== undefined) {
 			o.hitpoints -= this.damage;
@@ -324,48 +131,18 @@
 	}
 	
 	function Throttle(o) {
+		this.exists = true;
 		this.isPlayer = false;
+		
 		var s = o.state.slice();
 		this.state = s;
 		this.size = 10;
 		this.nodes = [];
-		this.draftnodes = [				
-			0,	0,	-1,
-			0,	-1,	0, 				
-			-1,	0,	0,
-			
-			0,	0,	-1,
-			1,	0,	0,
-			0,	-1,	0, 
-			
-			0,	0,	-1,
-			-1,	0,	0, 				
-			1,	0,	0, 	
-			
-			-1,	0,	0, 
-			0,	-1,	0, 				
-			1,	0,	0,
-		];
-		this.colors = [
-			255, 1,  1,
-			255, 1,  1,
-			255, 1,  1,
-			
-			255, 1,  1,
-			255, 1,  1,
-			255, 1,  1,
-			
-			255, 1,  1,
-			255, 1,  1,
-			255, 1,  1,			
-
-			255, 1,  1,
-			255, 1,  1,
-			255, 1,  1,				
-		];
+		this.draftnodes = draftnodes('throttle');
+		this.colors = colors('throttle');
 		this.TTL = 20;
 		this.fadeRatio = 0.7;
-		this.exists = true;
+
 		this.state = m4.translate(this.state, 0, 0, -o.size*2);
 		setNodes(this);
 		this.list = o.list;

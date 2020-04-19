@@ -4,48 +4,11 @@
 		if(!gl) {
 			window.alert('Absolutely no WebGL here!');
 		}
-		/*
-		gjk3d(
-			{
-				currentHitbox: [
-					0,0,1,
-					0,0,3,
-					2,0,1,
-					2,0,3,
-					0,2,1,
-					0,2,3,
-					2,2,3,
-					2,2,1,
-				],
-				state: [
-					1,1,1,1,
-					1,1,1,1,
-					1,1,1,1,
-					1,1,2,1,
-				],		
-			},{
-				currentHitbox: [
-					1,1,2+1,
-					1,1,4+1,
-					3,1,2+1,
-					3,1,4+1,
-					1,3,2+1,
-					1,3,4+1,
-					3,3,4+1,
-					3,3,2+1,
-				],
-				state: [
-					1,1,1,1,
-					1,1,1,1,
-					1,1,1,1,
-					2,2,3,1,
-				],
-			});
-		*/
+		
 		var vertexShaderSource = document.getElementById('vertex-shader').text;
-		var fragmentShaderSource = document.getElementById('fragment-shader').text;	
-		var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-		var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);	
+		var fragmentShaderSource = document.getElementById('fragment-shader').text;					
+		var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);		
+		var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);			
 		var program = createProgram(gl, vertexShader, fragmentShader);
 		
 		var positionLocation = gl.getAttribLocation(program, 'a_position');	
@@ -94,14 +57,14 @@
 				if(e.code == 'KeyW') {player.accelerateON = false;}
 				if(e.code == 'Space') {player.brakesON = false;}
 			});
-		
+
 		requestAnimationFrame(start);
 		
 		function start() {
 			render(gameObjects);			
 			realign(camera);
 			process(gameObjects);
-			
+			//realign(camera);
 			requestAnimationFrame(start);
 		}
 		

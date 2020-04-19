@@ -231,11 +231,18 @@
 				a[2] - b[2],
 			];
 		},
-		multiply: function(a, b) {
+		multiply: function(v, n) {
 			return [
-				a[0] * b, 
-				a[1] * b, 
-				a[2] * b,
+				n * v[0], 
+				n * v[1], 
+				n * v[2],
+			];
+		},
+		invert: function(v) {
+			return [
+				-1 * v[0],
+				-1 * v[1],
+				-1 * v[2],
 			];
 		},
 		dot: function(a, b) {

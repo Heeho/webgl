@@ -20,47 +20,10 @@
 		this.hitpoints = 999;
 		this.currentHitbox = [];
 		this.hitbox = [];
-		this.draftHitbox = [
-			0,-.5,	-2,
-			0,	-1,	0, 				
-			-1,	0,	0,
-			1,	0,	0,
-		];
+		this.draftHitbox = drafthitbox('carrier');
 		this.nodes = [];
-		this.draftnodes = [				
-			0,-.5,	-2,
-			0,	-1,	0, 				
-			-1,	0,	0,
-			
-			0,-.5,	-2,
-			1,	0,	0,
-			0,	-1,	0, 
-			
-			0,-.5,	-2,
-			-1,	0,	0, 				
-			1,	0,	0, 	
-			
-			-1,	0,	0, 
-			0,	-1,	0, 				
-			1,	0,	0,
-		];
-		this.colors = [
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-						
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-						
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,
-			Math.random()*155, Math.random()*155,  Math.random()*100,		
-		];
+		this.draftnodes = draftnodes('carrier');
+		this.colors = colors('carrier');
 		this.exists = true;
 		setNodes(this);
 		this.list = list;

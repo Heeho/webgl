@@ -38,20 +38,20 @@ function main() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	
-	const tex = gl.createTexture();	
-	gl.bindTexture(gl.TEXTURE_2D, tex);
-	{
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-		
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	}
-	
-	const fbuffer = gl.createFramebuffer();
-	gl.bindFramebuffer(gl.FRAMEBUFFER, fbuffer);
-	const attachmentPoint = gl.COLOR_ATTACHMENT0;
-	gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, tex, level);
+	//const tex = gl.createTexture();	
+	//gl.bindTexture(gl.TEXTURE_2D, tex);
+	//{
+	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	//	
+	//	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	//	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	//	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	//}
+	//
+	//const fbuffer = gl.createFramebuffer();
+	//gl.bindFramebuffer(gl.FRAMEBUFFER, fbuffer);
+	//const attachmentPoint = gl.COLOR_ATTACHMENT0;
+	//gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, tex, level);
 
 
 
@@ -107,7 +107,7 @@ function main() {
 		
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		//gl.enable(gl.CULL_FACE);
+		gl.enable(gl.CULL_FACE);
 		gl.enable(gl.DEPTH_TEST);
 		gl.useProgram(program);
 		
@@ -130,9 +130,7 @@ function main() {
 			var offset = 0;
 			gl.vertexAttribPointer(
 				texcoordLocation, size, type, normalize, stride, offset);
-				
-		
-		
+						
 		//gl.enableVertexAttribArray(colorLocation);
 		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		//	var size = 3;
