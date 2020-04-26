@@ -1,22 +1,43 @@
 'use strict';
-	function process(o) {
-		hitboxes(o);	
-		collide(o);
-		for(var i = 0; i < o.length; i++) {
-			if(!o[i].exists) {o.splice(i, 1);} else {
-				if(o[i].act !== undefined) {o[i].act();}
-				move(o[i]);		
+	function physics(p, o, e) {
+		actmove([o, p, e]);
+		hitboxes([o, p]);	
+		collide(o, p);
+
+	}
+		
+	function deletenonexistant(objlist) {
+		var o;
+		for(var h = 0; h < objlist.length; h++) {
+			o = objlist[h];
+			for(var i = o.length - 1; i >= 0; i--) {
+				if(o[i].exists == false) {
+					o.splice(i, 1);
+				}				
 			}
 		}
 	}
 	
-	function hitboxes(o) {
+	function actmove(objlist) {
+		var o;
+		for(var i = 0; i < objlist.length; i++) {
+			o = objlist[i];
+			for(var j = 0; j < o.length; j++) {
+				o[j].act();
+				move(o[j]);		
+			}
+		}
+	}
+	
+	function hitboxes(objlist) {
 		
 		var tempHitbox = [];
 		var tempObj;
+		var o;
 		
-		for(var i = 0; i < o.length; i++) {
-			if(o[i].hitbox !== undefined) {
+		for(var h = 0; h < objlist.length; h++) {
+			o = objlist[h];
+			for(var i = 0; i < o.length; i++) {
 				tempObj = {
 					state: o[i].state.slice(),
 					velocity: o[i].velocity.slice(),
@@ -32,25 +53,54 @@
 					o[i].currentHitbox[j+1] = tempHitbox[1];
 					o[i].currentHitbox[j+2] = tempHitbox[2];
 				}
+				//console.log(o[i].currentHitbox);
 			}
 		}
 	}
 	
-	function collide(o) {
+	function collide(o, p) {
 		var distance, measure, penetration;
 		
+		//projectile <-> object
+		for(var i = 0; i < p.length; i++) {
+			for(var j = 0; j < o.length; j++) {
+				//console.log(p[i], o[j]);
+				distance = v3.vlength(v3.substract(p[i].state.slice(12,15), o[j].state.slice(12,15)));
+				measure = Math.max.apply(null, p[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));				
+				//console.log('distance, measure: ', distance, measure);
+				
+				if(distance < measure) {
+					penetration = gjk3d(p[i], o[j]);
+					if(penetration !== undefined) {
+						p[i].onCollision(o[j], penetration);
+					}
+				}	
+			}
+		}
+				
+		//object <-> object
 		for(var i = 0; i < o.length - 1; i++) {
 			for(var j = i + 1; j < o.length; j++) {
-				if(o[i].currentHitbox !== undefined && o[j].currentHitbox !== undefined) {
-					distance = v3.vlength(v3.substract(o[i].state.slice(12,15), o[j].state.slice(12,15)));
-					measure = Math.max.apply(null, o[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));
-					//console.log('distance, measure: ', distance, measure);
-					if(distance	< measure) {
-						penetration = gjk3d(o[i], o[j]);
-						if(penetration !== undefined) {
-							if(o[i].onCollision !== undefined) {o[i].onCollision(o[j], penetration);}
-							if(o[j].onCollision !== undefined) {o[j].onCollision(o[i], penetration);}
-						}
+				/*
+					o.length: 5
+					i:	j:
+					0	1234
+					1	234
+					2	34
+					3	4
+				*/
+				
+				distance = v3.vlength(v3.substract(o[i].state.slice(12,15), o[j].state.slice(12,15)));
+				measure = Math.max.apply(null, o[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));
+				
+				//console.log('distance, measure: ', distance, measure);
+				
+				if(distance < measure) {
+					penetration = gjk3d(o[i], o[j]);
+					if(penetration !== undefined) {
+						//console.log(o[i], o[j]);
+						o[i].onCollision(o[j], penetration);
+						o[j].onCollision(o[i], penetration);
 					}
 				}
 			}
@@ -58,7 +108,7 @@
 	}	
 	
 	function move(o) {
-		if(o.velocity !== [0,0,0] && o.velocity !== undefined) { 
+		if(o.velocity != undefined) {
 			o.state[12] += o.velocity[0];
 			o.state[13] += o.velocity[1];
 			o.state[14] += o.velocity[2];
@@ -92,13 +142,15 @@
 		
 		var collision = false;
 		var winding = 0;
+		var loopCount;
 		
 		while(true) {
+			//console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 
 				d1 = central;
 				if(v3.vlength(d1) == 0) {
-					console.log('centers overlap, d1: ', d1); 
+					//console.log('centers overlap, d1: ', d1); 
 					//collision = true;
 					return up;
 				}
@@ -123,7 +175,7 @@
 				p2p1 = v3.substract(p1,p2);
 				d3 = v3.cross(v3.cross(p2p1, p1), p2p1);
 				if(v3.vlength(d3) == 0) {
-					console.log('edge collision, d3: ', d3); 
+					//console.log('edge collision, d3: ', d3); 
 					//collision = true;
 					return central;
 				}
@@ -141,7 +193,7 @@
 				p3p1 = v3.substract(p1,p3);
 				d4 = v3.cross(p2p1, p3p1);
 				if(v3.vlength(d4) == 0) {
-					console.log('edge collision, d4: ', d4); 
+					//console.log('edge collision, d4: ', d4); 
 					//collision = true;
 					return central;
 				}
@@ -205,6 +257,7 @@
 				break;
 			}
 		}
+		//return central;
 	}
 	
 	function furthest(hitbox, d) {		
@@ -258,8 +311,8 @@
 			{vertices: [p[0], p[2], p[1]], normal: n[3], distance: l[3],},
 		];
 
-		while(loopCount < 10) {
-			loopCount++;
+		while(loopCount++ < 10) {
+			//console.log('epa3d loop');
 			//sort faces by distance to origin
 			faces.sort(function(f1, f2) {
 				return f1.distance - f2.distance;

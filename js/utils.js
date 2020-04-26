@@ -11,9 +11,9 @@
 		for(var i = 0; i < o.draftnodes.length; i++) {
 			o.nodes[i] = o.draftnodes[i] * o.size;
 		}
-		if(o.draftHitbox !== undefined) {
-			for(var i = 0; i < o.draftHitbox.length; i++) {
-				o.hitbox[i] = o.draftHitbox[i] * o.size;
+		if(o.drafthitbox !== undefined) {
+			for(var i = 0; i < o.drafthitbox.length; i++) {
+				o.hitbox[i] = o.drafthitbox[i] * o.size;
 			}
 		}
 	}
@@ -258,9 +258,12 @@
 		vlength: function(v) {
 			return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 		},
+		vlength2: function(v) {
+			return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+		},
 		normalize: function(v) {
 			var length = v3.vlength(v);
-			if(length < 0.00001) {return [0, 0, 0];}
+			if(length < 0.0001) {return [0, 0, 0];}
 			return v3.multiply(v, 1/length);
 		},
 	}

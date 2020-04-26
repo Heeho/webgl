@@ -1,36 +1,42 @@
-Static website with a WebGL spaceshooter game in it.
+Static WebGL dogfight in space.
 
 Mobile/touchscreen not supported (yet).
 
 Controls:
 
-       T H R U S T
-            ^
-            :
-            w
-LEFT <- q       e -> RIGHT	 
-          Space
-            :
-            v
-        B R A K E			
+         T H R U S T
+              ^
+              :
+             [w]
+LEFT <- [q]       [e] -> RIGHT	 
+           [Space]
+              :
+              v
+            BRAKE			
 
-            s
-       Camera mode
+             [s]
+              :
+         CAMERA MODE
 
-          PITCH
-            ^
-            |
-  TILT <- mouse ->
-            |
-            v
+             [r]
+			  :
+        SWITCH TARGET
+
+            PITCH
+              ^
+              |
+   TILT <- [mouse] ->
+              |
+              v
 
 Done so far:
 1) Matrix/vector math for rotation/movement;
-2) Collision detection using GJK+EPA and custom hitboxes;
-3) Physics:
+2) Physics:
     - unrestricted acceleration, 
-    - mirror-bumping on collision;
-4) Gameplay:
+    - mirror-bumping on collision,
+    - GJK+EPA collision detection (explodes sometimes), custom hitboxes;
+3) Gameplay:
     - limited energy to accelerate/brake/shoot,
+	- smooth mouse control,
     - damage on projectile/object collision,
-	- camera (somewhat) smooth movement;
+	- camera modes: center-on-target freeflight, autopitch in 2D plane;

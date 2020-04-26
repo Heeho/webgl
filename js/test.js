@@ -1,6 +1,24 @@
 'use strict';
 function main() {
+	var objlist = [
+		{
+			exists: false,
+			act: function() {},
+		},
+		{
+			exists: true,
+			act: function() {},
+		},
+	];
 	
+	console.log(objlist);
+	objlist = existantin(objlist);
+	console.log(objlist);
+
+	function existantin(objlist) {
+		return objlist.filter(element => element.exists == true);
+	}
+
 	/*
 	//this.velocity = v3.add(this.velocity, v3.multiply(pen, (-2 * v3.dot(this.velocity, v3.normalize(pen)))));
 	var v = [1,1,1];
