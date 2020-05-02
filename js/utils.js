@@ -7,17 +7,6 @@
 		return d * Math.PI / 180;
 	}
 
-	function setNodes(o) {
-		for(var i = 0; i < o.draftnodes.length; i++) {
-			o.nodes[i] = o.draftnodes[i] * o.size;
-		}
-		if(o.drafthitbox !== undefined) {
-			for(var i = 0; i < o.drafthitbox.length; i++) {
-				o.hitbox[i] = o.drafthitbox[i] * o.size;
-			}
-		}
-	}
-
 	var m4 = {
 		composeCameraMatrix: function(xAxis, yAxis, zAxis, cameraPosition) {
 			return [
@@ -213,6 +202,16 @@
 			return m4.multiply(m, m4.scaling(sx, sy, sz));},
 	};
 
+	var v = {
+		multiply: function(v, n) {
+			var result = [];
+			for(var i = 0; i < v.length; i++) {
+				result.push(v[i] * n);
+			}
+			return result;
+		}	
+	};
+	
 	var v3 = {
 		abs: function(v) {
 			return [Math.abs(v[0]), Math.abs(v[1]), Math.abs(v[2])];
@@ -238,7 +237,7 @@
 				n * v[2],
 			];
 		},
-		invert: function(v) {
+		inverse: function(v) {
 			return [
 				-1 * v[0],
 				-1 * v[1],

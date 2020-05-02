@@ -5,9 +5,9 @@
 		this.target = 1;
 		this.up = [0, 1, 0];
 		this.mode = 0;
-		this.speed = .6;
+		this.speed = .4;
 		this.distance = 800;
-		this.scale = [1, 1, 1];					// global scale?
+		this.scale = [1, 1, 1];
 		this.fieldOfViewRadians = degToRad(55);
 		this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		this.zNear = 1;

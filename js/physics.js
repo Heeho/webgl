@@ -3,7 +3,6 @@
 		actmove([o, p, e]);
 		hitboxes([o, p]);	
 		collide(o, p);
-
 	}
 		
 	function deletenonexistant(objlist) {
@@ -39,21 +38,24 @@
 			o = objlist[h];
 			for(var i = 0; i < o.length; i++) {
 				tempObj = {
-					state: o[i].state.slice(),
-					velocity: o[i].velocity.slice(),
-					rotation: o[i].rotation !== undefined ? o[i].rotation.slice() : undefined,
+					state: {
+						matrix: o[i].state.matrix.slice(),
+						velocity: o[i].state.velocity.slice(),
+						rotation: o[i].state.rotation.slice(), //o[i].state.rotation !== undefined ? _ : undefined,
+					},
 				};
 				move(tempObj);
 				
 				//console.log('tempState: ', tempState);
 				//console.log('tempState + velocity: ', tempState);
+				//console.log(o[i]);
 				for(var j = 0; j < o[i].hitbox.length; j += 3) {
-					tempHitbox = m4.m4v3(tempObj.state, o[i].hitbox.slice(j, j+3));
-					o[i].currentHitbox[j] = tempHitbox[0];
-					o[i].currentHitbox[j+1] = tempHitbox[1];
-					o[i].currentHitbox[j+2] = tempHitbox[2];
+					tempHitbox = m4.m4v3(tempObj.state.matrix, o[i].hitbox.slice(j, j+3));
+					o[i].currenthitbox[j] = tempHitbox[0];
+					o[i].currenthitbox[j+1] = tempHitbox[1];
+					o[i].currenthitbox[j+2] = tempHitbox[2];
 				}
-				//console.log(o[i].currentHitbox);
+				//console.log(o[i].currenthitbox);
 			}
 		}
 	}
@@ -65,7 +67,7 @@
 		for(var i = 0; i < p.length; i++) {
 			for(var j = 0; j < o.length; j++) {
 				//console.log(p[i], o[j]);
-				distance = v3.vlength(v3.substract(p[i].state.slice(12,15), o[j].state.slice(12,15)));
+				distance = v3.vlength(v3.substract(p[i].state.location(), o[j].state.location()));
 				measure = Math.max.apply(null, p[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));				
 				//console.log('distance, measure: ', distance, measure);
 				
@@ -90,17 +92,18 @@
 					3	4
 				*/
 				
-				distance = v3.vlength(v3.substract(o[i].state.slice(12,15), o[j].state.slice(12,15)));
-				measure = Math.max.apply(null, o[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));
+				distance = v3.vlength2(v3.substract(o[i].state.location(), o[j].state.location()));
+				measure = o[i].model.radius + o[j].model.radius;
 				
 				//console.log('distance, measure: ', distance, measure);
+				//console.log('locations: ', o[i].state.location(), o[j].state.location());
 				
 				if(distance < measure) {
 					penetration = gjk3d(o[i], o[j]);
 					if(penetration !== undefined) {
 						//console.log(o[i], o[j]);
 						o[i].onCollision(o[j], penetration);
-						o[j].onCollision(o[i], penetration);
+						o[j].onCollision(o[i], v3.inverse(penetration));
 					}
 				}
 			}
@@ -108,26 +111,23 @@
 	}	
 	
 	function move(o) {
-		if(o.velocity != undefined) {
-			o.state[12] += o.velocity[0];
-			o.state[13] += o.velocity[1];
-			o.state[14] += o.velocity[2];
-		}
-		if(o.rotation !== [0,0,0] && o.rotation !== undefined) {
-			o.state = m4.zRotate(o.state, o.rotation[2]); o.rotation[2] = 0;
-			o.state = m4.xRotate(o.state, o.rotation[0]); o.rotation[0] = 0;
-			o.state = m4.yRotate(o.state, o.rotation[1]); o.rotation[1] = 0;
-		}
+		o.state.matrix[12] += o.state.velocity[0];
+		o.state.matrix[13] += o.state.velocity[1];
+		o.state.matrix[14] += o.state.velocity[2];
+
+		o.state.matrix = m4.zRotate(o.state.matrix, o.state.rotation[2]); o.state.rotation[2] = 0;
+		o.state.matrix = m4.xRotate(o.state.matrix, o.state.rotation[0]); o.state.rotation[0] = 0;
+		o.state.matrix = m4.yRotate(o.state.matrix, o.state.rotation[1]); o.state.rotation[1] = 0;
 	}
 	
 	function gjk3d(o1, o2) {
 		//GJK collision detection linked with EPA for penetration vector
-		var hitbox1 = o1.currentHitbox;
-		var hitbox2 = o2.currentHitbox;
+		var hitbox1 = o1.currenthitbox;
+		var hitbox2 = o2.currenthitbox;
 		//console.log('hitboxes: ',hitbox1, hitbox2);
 		
-		var c1 = o1.location();
-		var c2 = o2.location();
+		var c1 = o1.state.location();
+		var c2 = o2.state.location();
 		//console.log('centres: ', c1, c2);
 		var central = v3.substract(c2, c1);
 		var up = [0,1,0];
@@ -154,7 +154,7 @@
 					//collision = true;
 					return up;
 				}
-				d2 = v3.invert(d1);
+				d2 = v3.inverse(d1);
 				p1 = v3.substract(furthest(hitbox1, d1), furthest(hitbox2, d2));
 				//console.log('d1, p1: ', d1, p1);
 				simplex.push(p1);
@@ -179,7 +179,7 @@
 					//collision = true;
 					return central;
 				}
-				p3 = v3.substract(furthest(hitbox1, d3), furthest(hitbox2, v3.invert(d3)));
+				p3 = v3.substract(furthest(hitbox1, d3), furthest(hitbox2, v3.inverse(d3)));
 				//console.log('d3, p3 ', d3, p3);
 				if(v3.dot(p3, d3) > 0) {
 					simplex.push(p3);
@@ -198,9 +198,9 @@
 					return central;
 				}
 				
-				d4 = v3.dot(d4, p3) < 0 ? d4 : v3.invert(d4);
+				d4 = v3.dot(d4, p3) < 0 ? d4 : v3.inverse(d4);
 				
-				p4 = v3.substract(furthest(hitbox1, d4), furthest(hitbox2, v3.invert(d4)));
+				p4 = v3.substract(furthest(hitbox1, d4), furthest(hitbox2, v3.inverse(d4)));
 				//console.log('d4, p4 ', d4, p4);
 				if(v3.dot(p4, d4) > 0) {
 					simplex.push(p4);
@@ -224,7 +224,7 @@
 				n1 = winding > 0 ? v3.cross(p4p2, p4p1) : v3.cross(p4p1, p4p2);
 				n2 = winding > 0 ? v3.cross(p4p3, p4p2) : v3.cross(p4p2, p4p3);
 				n3 = winding > 0 ? v3.cross(p4p1, p4p3) : v3.cross(p4p3, p4p1);		
-				n4 = winding > 0 ? n4 : v3.invert(n4);
+				n4 = winding > 0 ? n4 : v3.inverse(n4);
 				
 				//console.log('n1, n2, n3: ', n1, n2, n3);
 				//console.log('simplex[0,1,2,3]: ', simplex);
@@ -248,7 +248,7 @@
 					return penetration;
 					
 				} else {
-					p4 = v3.substract(furthest(hitbox1, d), furthest(hitbox2, v3.invert(d)));
+					p4 = v3.substract(furthest(hitbox1, d), furthest(hitbox2, v3.inverse(d)));
 					if(v3.dot(p4, d) > 0) {simplex.push(p4);} else {
 						//console.log('no collision'); 
 						return;
@@ -321,7 +321,7 @@
 			//get the face closest to the origin and check if there are any simplex points in that direction
 			dx = faces[0].normal;
 			lx = faces[0].distance;
-			px = v3.substract(furthest(hitboxes[0], dx), furthest(hitboxes[1], v3.invert(dx)));
+			px = v3.substract(furthest(hitboxes[0], dx), furthest(hitboxes[1], v3.inverse(dx)));
 	
 			//if none (or in tolerance margin), get this normal * distance as penetration, else check other faces 
 			measure = v3.dot(v3.substract(px, faces[0].vertices[0]), dx);
@@ -338,7 +338,7 @@
 				n1 = v3.cross(pxpb, pxpa);
 				winding = v3.dot(n1, px);
 				
-				n1 = winding > 0 ? n1 : v3.invert(n1);
+				n1 = winding > 0 ? n1 : v3.inverse(n1);
 				l1 = v3.dot(px, v3.normalize(n1));
 				
 				faces.push({

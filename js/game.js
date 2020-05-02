@@ -17,57 +17,53 @@
 		
 		var positionBuffer = gl.createBuffer();	
 		var colorBuffer = gl.createBuffer();
+		var indexBuffer = gl.createBuffer();
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-			
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		
 			var camera = new Camera(gl);
 			
 			var objects = [];
 			var projectiles = [];
 			var effects = [];
 			
-			var player = new Fighter(objects, projectiles, effects);	
+			var player = new Fighter(objects, projectiles, effects);
+			player.isPlayer = true;
 			player.settarget(new Carrier(objects, projectiles, effects));
+			player.target.settarget(player);
 
-			//var controls = canvas.getContext('2d');
-			//var border = canvas.getBoundingClientRect();
-		
-			var currentX, currentY, nextX, nextY;
-			
+			var currentX, currentY, nextX, nextY;			
 			canvas.addEventListener('mousemove', e => {
 				nextX = e.clientX;
 				nextY = e.clientY;
-				//console.log('next, current: ', nextX, nextY, currentX, currentY);
-				if		(nextX > currentX)	{player.mousecontrol[0] += !player.lockedontarget ? 1 : 0;}
-				else if	(nextX < currentX)	{player.mousecontrol[0] -= !player.lockedontarget ? 1 : 0;}	
-				if		(nextY > currentY)	{player.mousecontrol[1] += !player.lockedontarget ? 1 : 0;}
-				else if	(nextY < currentY)	{player.mousecontrol[1] -= !player.lockedontarget ? 1 : 0;}
+				if		(nextX > currentX)	{player.controls.mousepos[0] += !player.controls.lockedontarget ? 1 : 0;}
+				else if	(nextX < currentX)	{player.controls.mousepos[0] -= !player.controls.lockedontarget ? 1 : 0;}	
+				if		(nextY > currentY)	{player.controls.mousepos[1] += !player.controls.lockedontarget ? 1 : 0;}
+				else if	(nextY < currentY)	{player.controls.mousepos[1] -= !player.controls.lockedontarget ? 1 : 0;}
 				currentX = nextX;
 				currentY = nextY;
+				//console.log(player.controls.mousepos);
 			});
 			
-			canvas.addEventListener('mousedown', (e) => {player.shootON = true;});
-			canvas.addEventListener('mouseup', (e) => {player.shootON = false;});
+			canvas.addEventListener('mousedown', (e) => {player.controls.shootON = true;});
+			canvas.addEventListener('mouseup', (e) => {player.controls.shootON = false;});
 
 			document.addEventListener('keydown', (e) => {
-				if(e.code == 'KeyQ')	{player.turnLeft = true;}
-				if(e.code == 'KeyE')	{player.turnRight = true;}
-				if(e.code == 'KeyW')	{player.accelerateON = true;}
-				if(e.code == 'Space')	{player.brakesON = true;}
+				if(e.code == 'KeyQ')	{player.controls.turnLeft = true;}
+				if(e.code == 'KeyE')	{player.controls.turnRight = true;}
+				if(e.code == 'KeyW')	{player.controls.accelerateON = true;}
+				if(e.code == 'Space')	{player.controls.brakesON = true;}
 				
-				if(e.code == 'KeyS')	{
-					camera.mode = camera.mode == 0 ? 1 : 0; 
-					player.lockedontarget = camera.mode == 1 ? true : false;
-					if(player.lockedontarget) {player.initautopitch();}
-				}
+				if(e.code == 'KeyS')	{camera.mode = camera.mode == 0 ? 1 : 0; if(camera.mode == 1) {player.initautopilot();}}
 				if(e.code == 'KeyR')	{camera.changetarget = true;}
 			});
 			document.addEventListener('keyup', (e) => {
-				if(e.code == 'KeyQ')	{player.turnLeft = false;}
-				if(e.code == 'KeyE')	{player.turnRight = false;}
-				if(e.code == 'KeyW')	{player.accelerateON = false;}
-				if(e.code == 'Space')	{player.brakesON = false;}
+				if(e.code == 'KeyQ')	{player.controls.turnLeft = false;}
+				if(e.code == 'KeyE')	{player.controls.turnRight = false;}
+				if(e.code == 'KeyW')	{player.controls.accelerateON = false;}
+				if(e.code == 'Space')	{player.controls.brakesON = false;}
 			});
 
 		requestAnimationFrame(start);
@@ -103,8 +99,11 @@
 				//console.log(objects);
 				for(var i = 0; i < objects.length; i++) {	
 					o = objects[i];	
-					//console.log(o);
-					o.nodes.length > 9 ? gl.enable(gl.CULL_FACE) : gl.disable(gl.CULL_FACE);				
+					//console.log(o.nodes.length);
+					o.model.indices.length > 3 ? gl.enable(gl.CULL_FACE) : gl.disable(gl.CULL_FACE);				
+					
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+					setIndices(o, gl);
 					
 					gl.enableVertexAttribArray(positionLocation);				
 					gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);	
@@ -127,16 +126,18 @@
 						gl.vertexAttribPointer(colorLocation, size, type, normalize, stride, offset);			
 				
 					var matrix = viewProjectionMatrix;
-					matrix = m4.multiply(matrix, o.state);
+					matrix = m4.multiply(matrix, o.state.matrix);
 					matrix = m4.scale(matrix, camera.scale[0], camera.scale[1], camera.scale[2]);				//global scale				
 					gl.uniformMatrix4fv(matrixLocation, false, matrix);	
 
-						var primitiveType = gl.TRIANGLES;
-						var offset = 0;
-						var count = o.nodes.length/3;
-						gl.drawArrays(primitiveType, offset, count);
+					var primitiveType = gl.TRIANGLES;
+					var count = o.model.indices.length;
+					var type = gl.UNSIGNED_SHORT;
+					var offset = 0;
+					gl.drawElements(primitiveType, count, type, offset);
 					
 					gl.bindBuffer(gl.ARRAY_BUFFER, null);
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 				}
 			}
 		}
@@ -147,28 +148,37 @@
 				if(objects[camera.target].hitpoints !== undefined) {player.target = objects[camera.target];}
 				camera.changetarget = false;
 			}
-
+			
 			var target;
 			var cameraPosition;
 			var nextCameraPosition;
 			var currentCameraPosition = camera.cameraMatrix.slice(12,15);
 			
-			switch(camera.mode) {						
-			case 0: 
-				nextCameraPosition = v3.add(v3.add(player.location(), v3.multiply(v3.normalize(player.lineoffire), -camera.distance)), v3.multiply(camera.up, camera.distance/4));
-				target = player.target.location();
-				break;
-			case 1: 
-				var halfline = v3.multiply(player.lineoffire, .5);
-				var camz = v3.multiply(player.state.slice(4,7), v3.vlength(halfline)*2);
-				target = v3.multiply(v3.add(player.location(), player.target.location()), .5);
-				nextCameraPosition = v3.substract(target, camz);
-				//console.log(target, camz, nextCameraPosition);
-				break;
+			mode(camera.mode);
+			
+			function mode(m) {
+				switch(m) {						
+				case 0: 
+					nextCameraPosition = v3.add(v3.add(player.state.location(), v3.multiply(v3.normalize(player.lineoffire), -camera.distance)), v3.multiply(camera.up, camera.distance/4));
+					target = player.target.state.location();
+					break;
+				case 1: 
+					var halfline = v3.multiply(player.lineoffire, .5);
+					var distance = v3.vlength(halfline)*2;
+					var camz = v3.multiply(player.state.Y(), v3.vlength(halfline)*2);
+			
+					if(distance > camera.distance*8) {mode(0); player.controls.lockedontarget = false; break;}
+					player.controls.lockedontarget = true;
+					
+					target = v3.multiply(v3.add(player.state.location(), player.target.state.location()), .5);
+					nextCameraPosition = v3.substract(target, camz);
+					//console.log(target, camz, nextCameraPosition);
+					break;
+				}
 			}
 			
 			cameraPosition = v3.add(currentCameraPosition, v3.multiply(v3.substract(nextCameraPosition, currentCameraPosition), camera.speed));
-			camera.cameraMatrix = m4.lookAt(cameraPosition, target, camera.up);				
+			camera.cameraMatrix = m4.lookAt(cameraPosition, target, camera.up);	
 		}		
 	}
 	

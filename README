@@ -29,14 +29,17 @@ LEFT <- [q]       [e] -> RIGHT
               |
               v
 
-Done so far:
+Done:
+0) Code reorganization:
+	- prototype inheritance for methods,
+	- precalculated models;
 1) Matrix/vector math for rotation/movement;
 2) Physics:
     - unrestricted acceleration, 
     - mirror-bumping on collision,
-    - GJK+EPA collision detection (explodes sometimes), custom hitboxes;
+    - GJK+EPA collision detection (explodes sometimes, looks like edge/plane bug), custom hitboxes;
 3) Gameplay:
     - limited energy to accelerate/brake/shoot,
 	- smooth mouse control,
     - damage on projectile/object collision,
-	- camera modes: center-on-target freeflight, autopitch in 2D plane;
+	- camera modes: center-on-target freeflight, Y-autopilot for 2D plane fight;

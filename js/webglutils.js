@@ -54,7 +54,15 @@
 	function setColors(o, gl) {
 		gl.bufferData(
 			gl.ARRAY_BUFFER,
-			new Uint8Array(o.colors),
+			new Uint8Array(o.model.colors),
+			gl.STATIC_DRAW
+		);
+	}
+	
+	function setIndices(o, gl) {
+		gl.bufferData(
+			gl.ELEMENT_ARRAY_BUFFER,
+			new Uint16Array(o.model.indices),
 			gl.STATIC_DRAW
 		);
 	}
