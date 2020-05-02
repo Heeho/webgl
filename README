@@ -19,7 +19,7 @@ LEFT <- [q]       [e] -> RIGHT
          CAMERA MODE
 
              [r]
-			  :
+              :
         SWITCH TARGET
 
             PITCH
@@ -40,6 +40,6 @@ Done:
     - GJK+EPA collision detection (explodes sometimes, looks like edge/plane bug), custom hitboxes;
 3) Gameplay:
     - limited energy to accelerate/brake/shoot,
-	- smooth mouse control,
+    - smooth mouse control,
     - damage on projectile/object collision,
-	- camera modes: center-on-target freeflight, Y-autopilot for 2D plane fight;
+    - camera modes: center-on-target freeflight, Y-autopilot for 2D plane fight;
