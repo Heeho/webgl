@@ -22,10 +22,11 @@ function Projectile(o) {
 	
 function Bolt(o) {
 		Projectile.call(this, o);
-		this.setmodel(models.bolt);		
-		var a = (Math.random() - .5)*33;
-		var b = (Math.random() - .5)*33;		
-		this.state.matrix = m4.translate(o.state.matrix, a, b, o.model.size*10 + this.model.TTL*o.acceleration);			
+		this.setmodel(models.bolt);	
+		var xdeviation = 11;
+		var ydeviation = 1;
+		var rand = 2*(Math.random() - .5);
+		this.state.matrix = m4.translate(o.state.matrix, rand*xdeviation, rand*ydeviation, o.model.size*10 + this.model.TTL*o.acceleration);		
 		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), 50));
 	}
 	Bolt.prototype = Object.create(Projectile.prototype);

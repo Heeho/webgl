@@ -56,7 +56,7 @@
 				if(e.code == 'KeyW')	{player.controls.accelerateON = true;}
 				if(e.code == 'Space')	{player.controls.brakesON = true;}
 				
-				if(e.code == 'KeyS')	{camera.mode = camera.mode == 0 ? 1 : 0; if(camera.mode == 1) {player.initautopilot();}}
+				if(e.code == 'KeyS')	{camera.mode = camera.mode == 0 ? 1 : 0;}
 				if(e.code == 'KeyR')	{camera.changetarget = true;}
 			});
 			document.addEventListener('keyup', (e) => {

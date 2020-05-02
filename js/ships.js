@@ -33,7 +33,7 @@ function Ship(objects, projectiles, effects) {
 	Ship.prototype.onCollision = function(o, pen) 
 		{
 			var pn = v3.normalize(pen);
-			var repulsion = v3.multiply(pn, (-this.acceleration*2 - 2 * v3.dot(this.state.velocity, pn)));
+			var repulsion = v3.multiply(pn, (-this.acceleration - 2*v3.dot(this.state.velocity, pn)));
 			this.state.velocity = v3.add(this.state.velocity, repulsion);
 		}
 	Ship.prototype.settarget = function(o) 			
@@ -55,15 +55,12 @@ function Ship(objects, projectiles, effects) {
 		{
 			
 		}
-	Ship.prototype.initautopilot = function() 
-		{
-		}
 	Ship.prototype.autopilot = function() 
 		{
 			this.autopilotwinding = v3.dot(v3.cross(this.state.Y(), this.lineoffire), this.state.X()) > 0 ? 1 : -1;
 			
 			var measure = v3.dot(this.state.Y(), v3.normalize(this.lineoffire));
-			console.log('measure: ', measure);
+			//console.log('measure: ', measure);
 			this.controls.mousepos[1] += measure == 0 ? 0 : measure*this.autopilotwinding;
 		}
 		

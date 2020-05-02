@@ -144,7 +144,7 @@
 		var winding = 0;
 		var loopCount = 0;
 		
-		while(loopCount++ < 111) {
+		while(loopCount++ < 1111) {
 			//console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 
