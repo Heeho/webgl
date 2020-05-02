@@ -145,7 +145,7 @@
 		var loopCount;
 		
 		while(true) {
-			//console.log('gjk3d loop');
+			console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 
 				d1 = central;
