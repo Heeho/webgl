@@ -142,10 +142,10 @@
 		
 		var collision = false;
 		var winding = 0;
-		var loopCount;
+		var loopCount = 0;
 		
-		while(true) {
-			console.log('gjk3d loop');
+		while(loopCount++ < 33) {
+			//console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 
 				d1 = central;
@@ -231,13 +231,14 @@
 				
 				if(v3.dot(n1, simplex[3]) < 0) {
 					simplex.splice(2, 1); d = n1;
-				} else 
-				if(v3.dot(n2, simplex[3]) < 0) {
+				} 
+				else if(v3.dot(n2, simplex[3]) < 0) {
 					simplex.splice(0, 1); d = n2;
-				} else 
-				if(v3.dot(n3, simplex[3]) < 0) {
+				} 
+				else if(v3.dot(n3, simplex[3]) < 0) {
 					simplex.splice(1, 1); d = n3;
-				} else {
+				} 
+				else {
 					collision = true;
 				}
 				
@@ -257,7 +258,6 @@
 				break;
 			}
 		}
-		//return central;
 	}
 	
 	function furthest(hitbox, d) {		
@@ -311,8 +311,7 @@
 			{vertices: [p[0], p[2], p[1]], normal: n[3], distance: l[3],},
 		];
 
-		while(loopCount++ < 10) {
-			//console.log('epa3d loop');
+		while(loopCount++ < 33) {
 			//sort faces by distance to origin
 			faces.sort(function(f1, f2) {
 				return f1.distance - f2.distance;
