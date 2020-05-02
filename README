@@ -31,8 +31,8 @@ LEFT <- [q]       [e] -> RIGHT
 
 Done:
 0) Code reorganization:
-	- prototype inheritance for methods,
-	- precalculated models;
+    - prototype inheritance for methods,
+    - precalculated models;
 1) Matrix/vector math for rotation/movement;
 2) Physics:
     - unrestricted acceleration, 
