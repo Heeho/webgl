@@ -103,10 +103,10 @@ function Ship(objects, projectiles, effects) {
 					if(toofast) {
 						this.brake();
 					} else {
-						this.accelerate();
+						this.accelerate(new Flash(this));
 					}
 				} else {
-					this.accelerate();
+					this.accelerate(new Flash(this));
 				}
 			} else {
 				this.shoot();

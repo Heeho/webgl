@@ -36,3 +36,15 @@ function Throttle(o) {
 	} 
 	Throttle.prototype = Object.create(Effect.prototype);
 	Throttle.prototype.constructor = Throttle;	
+	
+function Flash(o) {
+		Effect.call(this, o);
+		this.state.matrix = o.state.matrix.slice();
+		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), -o.acceleration));
+		
+		this.setmodel(models.flash);
+
+		this.state.matrix = m4.translate(this.state.matrix, 0, 0, -o.model.size*2);
+	} 
+	Flash.prototype = Object.create(Effect.prototype);
+	Flash.prototype.constructor = Flash;	
