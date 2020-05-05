@@ -3,16 +3,19 @@ function Ship(objects, projectiles, effects) {
 		//primary
 		Thing.call(this);
 
+		this.mass = this.mass * this.model.size;
+		
 		this.isPlayer = false;
 		
 		this.target = null;
-		this.autopilotwinding = 0;
+		this.autopilotwinding = [];
+		this.autopilotrange2 = 6400 ** 2;
 		this.lineoffire = null;
 		
 		this.controls = new Controls();
 
 		//engine
-		this.acceleration = 4;
+		this.acceleration = 2;
 		
 		//energy
 		this.energyCap = 100;
@@ -20,7 +23,7 @@ function Ship(objects, projectiles, effects) {
 		this.energy = this.energyCap;		
 		this.accelerateCost = 2;
 		this.brakesCost = 2;
-		this.shootCost = 15;	
+		this.shootCost = 10;	
 
 		//put
 		this.objects = objects;
@@ -36,32 +39,80 @@ function Ship(objects, projectiles, effects) {
 			var repulsion = v3.multiply(pn, (-this.acceleration - 2*v3.dot(this.state.velocity, pn)));
 			this.state.velocity = v3.add(this.state.velocity, repulsion);
 		}
-	Ship.prototype.settarget = function(o) 			
-		{		
-			this.target = o;
-			this.lineoffire = v3.substract(this.target.state.location(), this.state.location());
-		}
-	Ship.prototype.accelerate = function() 
+	Ship.prototype.accelerate = function(e) 
 		{
-			this.state.velocity = v3.add(this.state.velocity, v3.multiply(this.state.direction(), this.acceleration));
-			var t = new Throttle(this);
+			if(this.energy >= this.accelerateCost) {
+				this.energy -= this.accelerateCost;
+				this.state.velocity = v3.add(this.state.velocity, v3.multiply(this.state.direction(), this.acceleration));
+			}
 		}
-	Ship.prototype.brake = function() 
+	Ship.prototype.brake = function(e) 
 		{
-			this.state.velocity = v3.multiply(this.state.velocity, 0.9);
-			var t = new Throttle(this);
+			if(this.energy >= this.brakesCost) {
+				this.energy -= this.brakesCost;
+				this.state.velocity = v3.multiply(this.state.velocity, 0.9);
+			}
 		}
 	Ship.prototype.shoot = function() 
 		{
-			
+			if(this.energy >= this.shootCost) {
+				this.energy -= this.shootCost;
+				var p = new Bolt(this);
+			}
 		}
-	Ship.prototype.autopilot = function() 
+	Ship.prototype.autopilotX = function() 
 		{
-			this.autopilotwinding = v3.dot(v3.cross(this.state.Y(), this.lineoffire), this.state.X()) > 0 ? 1 : -1;
-			
-			var measure = v3.dot(this.state.Y(), v3.normalize(this.lineoffire));
+			var correction = v3.multiply(v3.substract(this.target.state.velocity, this.state.velocity), 11);
+			this.autopilotwinding[0] = v3.dot(v3.cross(this.state.X(), this.lineoffire), this.state.Y()) > 0 ? -1 : 1;			
+			this.controls.mousepos[0] += v3.dot(this.state.X(), v3.normalize(v3.add(this.lineoffire, correction))) * this.autopilotwinding[0];
 			//console.log('measure: ', measure);
-			this.controls.mousepos[1] += measure == 0 ? 0 : measure*this.autopilotwinding;
+		}
+	Ship.prototype.autopilotY = function() 
+		{
+			var correction = v3.multiply(v3.substract(this.target.state.velocity, this.state.velocity), 11);
+			this.autopilotwinding[1] = v3.dot(v3.cross(this.state.Y(), this.lineoffire), this.state.X()) > 0 ? 1 : -1;			
+			this.controls.mousepos[1] += v3.dot(this.state.Y(), v3.normalize(v3.add(this.lineoffire, correction))) * this.autopilotwinding[1];
+			//console.log('measure: ', measure);
+		}
+	Ship.prototype.updateenergy = function() 
+		{
+			this.energy += this.energy < this.energyCap ? this.energyGain : this.energy > this.energyCap ? -1 : 0;
+		}
+	Ship.prototype.updatelineoffire = function() 
+		{
+			this.lineoffire = this.target == null ? null : v3.substract(this.target.state.location(), this.state.location());
+		}		
+	Ship.prototype.changetarget = function() 
+		{
+			var offset = 1;
+			var i = this.objects.indexOf(this.target);
+			i = i == -1 ? 0 : i;
+			this.target = i + 1 < this.objects.length ? this.objects[i + 1] : this.objects[offset];
+			this.controls.changetarget = false;
+		}
+	Ship.prototype.ai = function() 
+		{
+			this.state.matrix = m4.yRotate(m4.lookAt(this.state.location(), this.target.state.location(), [0,1,0]), degToRad(180));	
+			
+			var outofrange = v3.vlength2(this.lineoffire) > this.autopilotrange2 / 6;
+			var wrongdirection = v3.dot(v3.normalize(this.state.velocity), v3.normalize(this.lineoffire)) < 0;
+			var toofast = v3.vlength(this.state.velocity) > 22;
+			
+			if(outofrange) {
+				if(wrongdirection) {
+					if(toofast) {
+						this.brake();
+					} else {
+						this.accelerate();
+					}
+				} else {
+					this.accelerate();
+				}
+			} else {
+				this.shoot();
+			}
+				
+			var onlineoffire = v3.dot(v3.normalize(this.lineoffire), this.target.state.X()) > this.model.radius2;
 		}
 		
 function Fighter(objects, projectiles, effects) {
@@ -72,59 +123,32 @@ function Fighter(objects, projectiles, effects) {
 	Fighter.prototype.constructor = Fighter;
 	Fighter.prototype.act = function() 
 		{
-			this.lineoffire = this.lineoffire == null ? null : v3.substract(this.target.state.location(), this.state.location());
+			this.state.rotation[0] -= this.controls.mousepos[1] * this.controls.rotationspeed[0];			
+			this.state.rotation[2] += this.controls.mousepos[0] * this.controls.rotationspeed[2];
+			this.controls.updatemousepos();
+			this.updatelineoffire();
+			this.updateenergy();
 			
-			this.energy += this.energy < this.energyCap ? this.energyGain : this.energy > this.energyCap ? -1 : 0;		
-
-			if(this.controls.lockedontarget) {
-				this.autopilot();
-			}
+			this.controls.lockedontarget = (!this.autopilotON && v3.vlength2(this.lineoffire) > this.autopilotrange2) ? false : true;
 			
-			this.state.rotation[0] -= this.controls.mousepos[1]*this.controls.rotationspeed[0];			
-			this.state.rotation[2] += this.controls.mousepos[0]*this.controls.rotationspeed[2];
-			
-			if(this.controls.mousepos[0] > 0) {this.controls.mousepos[0] -= 1;} 
-			if(this.controls.mousepos[0] < 0) {this.controls.mousepos[0] += 1;}
-			
-			if(this.controls.mousepos[1] < 1 && this.controls.mousepos[1] > -1) {this.controls.mousepos[1] = 0;}
-			if(this.controls.mousepos[1] > 0) {this.controls.mousepos[1] -= 1;}
-			if(this.controls.mousepos[1] < 0) {this.controls.mousepos[1] += 1;}	
-			
-			
-			if(this.controls.turnLeft) {
-				this.state.rotation[1] = -this.controls.rotationspeed[1];
-			}
-			if(this.controls.turnRight) {
-				this.state.rotation[1] = this.controls.rotationspeed[1];
-			}
-			if(this.controls.accelerateON && this.energy > this.accelerateCost) {
-				this.energy -= this.accelerateCost;
-				this.accelerate();
-			}
-			if(this.controls.shootON && this.energy >= this.shootCost) {
-				this.energy -= this.shootCost;
-				this.shoot();
+			if(this.controls.autopilotON && this.controls.lockedontarget) {
+				this.autopilotY();
 			}	
-			if(this.controls.brakesON && this.energy >= this.brakesCost) {
-				this.energy -= this.brakesCost;
-				this.brake();
+			if(this.controls.changetarget) {
+				this.changetarget();
 			}
+			
+			this.state.rotation[1] = 
+				this.controls.turnLeft ? -this.controls.rotationspeed[1] :
+				this.controls.turnRight ? this.controls.rotationspeed[1] :
+				this.controls.lockedontarget ? this.controls.mousepos[0] * this.controls.rotationspeed[2] :
+				this.state.rotation[1];
+			
+			if(this.controls.accelerateON)	{this.accelerate(new Throttle(this));}
+			if(this.controls.brakesON)		{this.brake(new Throttle(this));}
+			if(this.controls.shootON)		{this.shoot();}	
 		}
-	Fighter.prototype.accelerate = function() 
-		{
-			this.state.velocity = v3.add(this.state.velocity, v3.multiply(this.state.direction(), this.acceleration));
-			var t = new Throttle(this);
-		}
-	Fighter.prototype.brake = function() 
-		{
-			this.state.velocity = v3.multiply(this.state.velocity, 0.9);
-			var t = new Throttle(this);
-		}
-	Fighter.prototype.shoot = function()
-		{
-			var b = new Bolt(this);
-		}
-		
+	
 function Carrier(objects, projectiles, effects) {
 		this.setmodel(models.carrier);
 		Ship.call(this, objects, projectiles, effects);
@@ -175,33 +199,27 @@ function Carrier(objects, projectiles, effects) {
 function Interceptor(o) {
 		this.setmodel(models.interceptor);
 		Ship.call(this, o.objects, o.projectiles, o.effects);
-		
-		this.state.matrix = m4.translate(o.state.matrix, 0, 0, o.model.size + this.model.size);
-		
+
 		this.target = o.target;
-		this.reaction = 0;
-		this.reactionCap = 10;
+		this.controls.autopilotNO = true;
+		this.controls.lockedontarget = true;
 		
-		this.acceleration = 4;
-		this.speed = 40;
-		this.controls.rotationspeed = [6, 0.15, 6];		
-		this.hitpoints = 5;
+		this.acceleration = 1;	
+		this.hitpoints = 1;
+		this.beamrange2 = this.autopilotrange2 / 3;
+		this.shootCost = 30;
 		
-		this.model = models.interceptor;
-		
-		this.state.matrix = m4.translate(this.state.matrix, 0, 0, this.model.size*12);		
+		this.state.matrix = m4.translate(this.state.matrix, 0, 0, this.model.size*12);
 	}
 	Interceptor.prototype = Object.create(Ship.prototype);
 	Interceptor.prototype.constructor = Interceptor;
 	Interceptor.prototype.act = function() 
 		{
-			var destination = this.target.state.location();
-			var direction = v3.normalize(v3.substract(destination, this.state.location()));
+			this.updatelineoffire();
+			this.updateenergy();		
+						
+			this.ai();
 			
-			if(v3.dot(this.target.state.velocity, direction) > 0) {}
-			if(v3.dot(this.target.state.direction(), this.state.direction()) > 0) {}
-		}
-	Interceptor.prototype.shoot = function() 
-		{
-			//shoot beam
+			//var destination = this.target.state.location();
+			//var direction = v3.normalize(this.lineoffire);
 		}

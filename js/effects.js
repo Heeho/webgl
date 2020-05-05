@@ -6,7 +6,7 @@ function Effect(o) {
 	Effect.prototype = Object.create(Thing.prototype);
 	Effect.prototype.constructor = Effect;
 	Effect.prototype.act = function() 
-		{
+		{			
 			if(this.TTL == 0) {this.exists = false;} else {
 				this.nodes = this.model.nodesbank[this.model.nodesbank.length - this.TTL];
 				this.TTL--;
@@ -20,7 +20,7 @@ function Explosion(o) {
 		
 		this.setmodel(models.explosion);
 
-		this.state.matrix = m4.translate(this.state.matrix, 0, 0, -o.model.size*2);
+		//this.state.matrix = m4.translate(this.state.matrix, 0, 0, -o.model.size*2);
 	} 
 	Explosion.prototype = Object.create(Effect.prototype);
 	Explosion.prototype.constructor = Explosion;	

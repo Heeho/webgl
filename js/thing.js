@@ -2,6 +2,7 @@
 	function Thing() {
 		this.exists = true;
 		this.state = new State();
+		this.mass = 1;
 	}
 	Thing.prototype.setmodel = function(m) 
 		{

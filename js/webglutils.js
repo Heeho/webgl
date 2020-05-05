@@ -59,6 +59,14 @@
 		);
 	}
 	
+	function setTexcoords(o, gl) {
+		gl.bufferData (
+			gl.ARRAY_BUFFER,
+			new Float32Array(o.model.texcoords),
+			gl.STATIC_DRAW
+		);
+	}
+	
 	function setIndices(o, gl) {
 		gl.bufferData(
 			gl.ELEMENT_ARRAY_BUFFER,

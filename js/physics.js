@@ -1,8 +1,34 @@
 'use strict';
-	function physics(p, o, e) {
-		actmove([o, p, e]);
-		hitboxes([o, p]);	
-		collide(o, p);
+	function physics(p, o, e, c) {
+		deletenonexistant([p, o, e]);
+		actmove(e.concat(p, o, c));
+		gravity(o.concat(c));
+		hitboxes(o.concat(p, c));	
+		collide(o.concat(c), p);
+	}
+	
+	var G = 6.67 * 10 ** (-11);	
+	function gravity(o) {
+		//console.log('gravity');
+		var num, a1, a2, r;
+		
+		for(var i = 0; i < o.length - 1; i++) {
+			for(var j = i + 1; j < o.length; j++) {	
+				r = v3.substract(o[j].state.location(), o[i].state.location());
+				num = G / v3.vlength2(r) / 60; // 60 for 60FPS
+				a1 = num * o[j].mass; 
+				a2 = num * o[i].mass;
+				r = v3.normalize(r);
+				o[i].state.velocity = v3.add(o[i].state.velocity, v3.multiply(r, a1));
+				o[j].state.velocity = v3.add(o[j].state.velocity, v3.multiply(v3.inverse(r), a2));
+			}
+			//for(var k = 0; k < o.length; k++) {
+			//	r = v3.substract(c[i].state.location(), o[k].state.location());
+			//	a1 = G * c[i].mass / v3.vlength2(r) / 60;
+			//	r = v3.normalize(r);
+			//	o[k].state.velocity = v3.add(o[k].state.velocity, v3.multiply(r, a1));
+			//}
+		}
 	}
 		
 	function deletenonexistant(objlist) {
@@ -17,46 +43,37 @@
 		}
 	}
 	
-	function actmove(objlist) {
-		var o;
-		for(var i = 0; i < objlist.length; i++) {
-			o = objlist[i];
-			for(var j = 0; j < o.length; j++) {
-				o[j].act();
-				move(o[j]);		
-			}
+	function actmove(o) {
+		for(var i = 0; i < o.length; i++) {
+			move(o[i]);		
+			o[i].act();
 		}
 	}
 	
-	function hitboxes(objlist) {
-		
+	function hitboxes(o) {		
 		var tempHitbox = [];
 		var tempObj;
-		var o;
 		
-		for(var h = 0; h < objlist.length; h++) {
-			o = objlist[h];
-			for(var i = 0; i < o.length; i++) {
-				tempObj = {
-					state: {
-						matrix: o[i].state.matrix.slice(),
-						velocity: o[i].state.velocity.slice(),
-						rotation: o[i].state.rotation.slice(), //o[i].state.rotation !== undefined ? _ : undefined,
-					},
-				};
-				move(tempObj);
-				
-				//console.log('tempState: ', tempState);
-				//console.log('tempState + velocity: ', tempState);
-				//console.log(o[i]);
-				for(var j = 0; j < o[i].hitbox.length; j += 3) {
-					tempHitbox = m4.m4v3(tempObj.state.matrix, o[i].hitbox.slice(j, j+3));
-					o[i].currenthitbox[j] = tempHitbox[0];
-					o[i].currenthitbox[j+1] = tempHitbox[1];
-					o[i].currenthitbox[j+2] = tempHitbox[2];
-				}
-				//console.log(o[i].currenthitbox);
+		for(var i = 0; i < o.length; i++) {
+			tempObj = {
+				state: {
+					matrix: o[i].state.matrix.slice(),
+					velocity: o[i].state.velocity.slice(),
+					rotation: o[i].state.rotation.slice(), //o[i].state.rotation !== undefined ? _ : undefined,
+				},
+			};
+			move(tempObj);
+			
+			//console.log('tempState: ', tempState);
+			//console.log('tempState + velocity: ', tempState);
+			//console.log(o[i]);
+			for(var j = 0; j < o[i].hitbox.length; j += 3) {
+				tempHitbox = m4.m4v3(tempObj.state.matrix, o[i].hitbox.slice(j, j+3));
+				o[i].currenthitbox[j] = tempHitbox[0];
+				o[i].currenthitbox[j+1] = tempHitbox[1];
+				o[i].currenthitbox[j+2] = tempHitbox[2];
 			}
+			//console.log(o[i].currenthitbox);
 		}
 	}
 	
@@ -67,8 +84,8 @@
 		for(var i = 0; i < p.length; i++) {
 			for(var j = 0; j < o.length; j++) {
 				//console.log(p[i], o[j]);
-				distance = v3.vlength(v3.substract(p[i].state.location(), o[j].state.location()));
-				measure = Math.max.apply(null, p[i].hitbox.map(Math.abs)) + Math.max.apply(null, o[j].hitbox.map(Math.abs));				
+				distance = v3.vlength2(v3.substract(p[i].state.location(), o[j].state.location()));
+				measure = p[i].model.radius2 + o[j].model.radius2;				
 				//console.log('distance, measure: ', distance, measure);
 				
 				if(distance < measure) {
@@ -93,7 +110,7 @@
 				*/
 				
 				distance = v3.vlength2(v3.substract(o[i].state.location(), o[j].state.location()));
-				measure = o[i].model.radius + o[j].model.radius;
+				measure = o[i].model.radius2 + o[j].model.radius2;
 				
 				//console.log('distance, measure: ', distance, measure);
 				//console.log('locations: ', o[i].state.location(), o[j].state.location());
@@ -144,7 +161,7 @@
 		var winding = 0;
 		var loopCount = 0;
 		
-		while(loopCount++ < 1111) {
+		while(loopCount++ < 33) {
 			//console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 

@@ -6,7 +6,9 @@ function main() {
 	if(!gl) {
 		window.alert('Absolutely no WebGL here!');
 	}
-
+	
+	var model = models.fighter;
+	
 	var vertexShaderSource = document.getElementById('vertex-shader').text;
 	var fragmentShaderSource = document.getElementById('fragment-shader').text;	
 	var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -18,18 +20,20 @@ function main() {
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
 	var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 
+/*-= texture from buffer =-*/
 	const texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);	
 		const level = 0;
-		const internalFormat = gl.LUMINANCE;
+		const internalFormat = gl.RGB;
 		const width = 4
 		const height = 2
 		const border = 0;
-		const format = gl.LUMINANCE;
+		const format = gl.RGB;
 		const type = gl.UNSIGNED_BYTE;
 		const data = new Uint8Array([
-			128, 64, 128, 64,
-			64, 128, 64, 128,
+			255,0,0,	0,0,255,	0,255,0,	255,255,255,
+			255,255,255,	255,0,0,	0,0,255,	0,255,0,
+			
 		]);
 		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, format, type, data);
 	
@@ -38,6 +42,7 @@ function main() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	
+/*-= output texture =-*/
 	//const tex = gl.createTexture();	
 	//gl.bindTexture(gl.TEXTURE_2D, tex);
 	//{
@@ -53,9 +58,7 @@ function main() {
 	//const attachmentPoint = gl.COLOR_ATTACHMENT0;
 	//gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, tex, level);
 
-
-
-	
+/*-= texture from image =-*/
 	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,255,255]));
 	//var image = new Image();
 	//image.src = 'res/image.PNG';
@@ -63,22 +66,25 @@ function main() {
 	//	gl.bindTexture(gl.TEXTURE_2D, texture);
 	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 	//	gl.generateMipmap(gl.TEXTURE_2D);
-	//});
+	//});			
 	
-	var positionBuffer = gl.createBuffer();	
-	//var colorBuffer = gl.createBuffer();
-	var textureBuffer = gl.createBuffer();
+	var indexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+	setIndices(model, gl);
 	
+	var positionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
-	setGeometry(gl);	
+	setGeometry(model, gl);	
 	
+	//var colorBuffer = gl.createBuffer();
 	//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-	//setColors(gl);	
-
+	//setColors(model, gl);	
+	
+	var textureBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
-	setTexcoords(gl);
+	setTexcoords(model, gl);
 
-	var translation = [0, 0, -350];									// = [obj.velocity[0], obj.velocity[1], obj.velocity[2]]
+	var translation = [0, 0, -10000];									// = [obj.velocity[0], obj.velocity[1], obj.velocity[2]]
 	var rotation = [degToRad(180), degToRad(0), degToRad(0)];		// = [obj.rotation[0], obj.rotation[1], obj.rotation[2]] // theta, phi, gamma
 	var scale = [40, 40, 40];										// global scale?
 	var fieldOfViewRadians = degToRad(60);							// = camera.fieldOfView;
@@ -106,31 +112,36 @@ function main() {
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 		
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		
 		gl.enable(gl.CULL_FACE);
 		gl.enable(gl.DEPTH_TEST);
 		gl.useProgram(program);
-		
+
+/*-= INDICES =-*/
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		setIndices(model, gl);
+/*-= POSITION =-*/
 		gl.enableVertexAttribArray(positionLocation);
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
+		setGeometry(model, gl);	
 			var size = 3;
 			var type = gl.FLOAT;
 			var normalize = false;
 			var stride = 0;
 			var offset = 0;
-			gl.vertexAttribPointer(
-				positionLocation, size, type, normalize, stride, offset);
-	
+			gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
+				
+/*-= TEXTURE =-*/	
 		gl.enableVertexAttribArray(texcoordLocation);
 		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
+		setTexcoords(model, gl);
 			var size = 2;
 			var type = gl.FLOAT;
 			var normalize = false;
 			var stride = 0;
 			var offset = 0;
-			gl.vertexAttribPointer(
-				texcoordLocation, size, type, normalize, stride, offset);
-						
+			gl.vertexAttribPointer(texcoordLocation, size, type, normalize, stride, offset);
+	
+/*-= COLORS =-*/	
 		//gl.enableVertexAttribArray(colorLocation);
 		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		//	var size = 3;
@@ -143,7 +154,7 @@ function main() {
 			
 		var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		var zNear = 1;
-		var zFar = 2000;
+		var zFar = 44444;
 		
 		var matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 		//just //matrix = m4.multiply(matrix, obj.state);
@@ -154,213 +165,46 @@ function main() {
 		matrix = m4.scale(matrix, scale[0], scale[1], scale[2]);
 		
 		gl.uniformMatrix4fv(matrixLocation, false, matrix);	
-
-		var primitiveType = gl.TRIANGLES;
-		var offset = 0;
-		var count = 22 * 3;
 		
-		gl.drawArrays(primitiveType, offset, count);
+		var primitiveType = gl.TRIANGLES;
+		var count = model.indices.length;
+		var type = gl.UNSIGNED_SHORT;
+		var offset = 0;
+		gl.drawElements(primitiveType, count, type, offset);
+		
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);	
 		
 		requestAnimationFrame(drawScene);
 	}
 }
 
-function setGeometry(gl) {
+function setIndices(model, gl) {
 	gl.bufferData(
-		gl.ARRAY_BUFFER, 
-		new Float32Array([
-			//front wings
-			-1, 0, 6,
-			-3, 0, 0,
-			-1, -1, 2,
-			
-			1, 0, 6,
-			1, -1, 2,
-			3, 0, 0,
-			
-			//sides
-			-3, 0, 0,
-			0, -1, -2,
-			-1, -1, 2,
-						
-			3, 0, 0,
-			1, -1, 2,
-			0, -1, -2,
-
-			//hood
-			-1, -1, 2,
-			0, -1, -2,
-			1, -1, 2,
-			
-			//buttocks
-			0, -1, -2,
-			-3, 0, 0,
-			-2, 0, -2,
-						
-			0, -1, -2,
-			2, 0, -2,
-			3, 0, 0,
-			
-			//front
-			-1, 0, 4,
-			-1, -1, 2,
-			1, 0, 4,
-			
-			1, 0, 4,
-			-1, -1, 2,
-			1, -1, 2,
-			
-			//upper jaws
-			-1, 0, 4,
-			-1, 0, 6,
-			-1, -1, 2,
-			
-			1, 0, 4,
-			1, -1, 2,
-			1, 0, 6,
-			
-			//butt
-			-2, 0, -2,		
-			2, 0, -2,
-			0, -1, -2,
-			
-			//bottom
-			-1, 1, 0,
-			2, 0, -2,
-			-2, 0, -2,
-			
-			-1, 1, 0,
-			1, 1, 0,
-			2, 0, -2,
-			
-			//bottom sides
-			-1, 1, 0,
-			-2, 0, -2,
-			-3, 0, 0,
-			
-			1, 1, 0,
-			3, 0, 0,
-			2, 0, -2,
-			
-			//bottom wings
-			-1, 1, 0,
-			-3, 0, 0,
-			-1, 0, 6,
-			
-			1, 1, 0,
-			1, 0, 6,
-			3, 0, 0,
-			
-			//bottom front
-			-1, 1, 0,
-			-1, 0, 4,
-			1, 0, 4,
-			
-			1, 1, 0,
-			-1, 1, 0,
-			1, 0, 4,	
-			
-			//bottom jaws
-			-1, 1, 0,
-			-1, 0, 6,
-			-1, 0, 4,
-			
-			1, 1, 0,
-			1, 0, 4,
-			1, 0, 6,							
-		]),
+		gl.ELEMENT_ARRAY_BUFFER,
+		new Uint16Array(model.indices),
 		gl.STATIC_DRAW
 	);
 }
 
-function setColors(gl) {
+function setGeometry(model, gl) {
+	gl.bufferData(
+		gl.ARRAY_BUFFER, 
+		new Float32Array(model.draftnodes),
+		gl.STATIC_DRAW
+	);
+}
+
+function setColors(model, gl) {
 	gl.bufferData(
 		gl.ARRAY_BUFFER,
-		new Uint8Array([
-		/*//front wings
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//sides
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//hood
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//buttocks		
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//front		
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//upper jaws		
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//butt
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//bottom
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//bottom sides
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//bottom wings
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//bottom front
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		//bottom jaws
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,
-		Math.random()*55,Math.random()*35,Math.random()*155,*/
-		]),
+		new Uint8Array(model.colors),
 		gl.STATIC_DRAW
 	);
 }	
 
-function setTexcoords(gl) {
+function setTexcoords(model, gl) {
+	var m = model;
 	gl.bufferData (
 		gl.ARRAY_BUFFER,
 		new Float32Array([
@@ -414,43 +258,7 @@ function setTexcoords(gl) {
 
 			0, 0,
 			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,		
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 0,
-			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,		
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 0,
-			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,					
+			1, 0,			
 		]),
 		gl.STATIC_DRAW
 	);

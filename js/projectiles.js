@@ -24,7 +24,7 @@ function Bolt(o) {
 		Projectile.call(this, o);
 		this.setmodel(models.bolt);	
 		var xdeviation = 11;
-		var ydeviation = 1;
+		var ydeviation = 11;
 		var rand = 2*(Math.random() - .5);
 		this.state.matrix = m4.translate(o.state.matrix, rand*xdeviation, rand*ydeviation, o.model.size*10 + this.model.TTL*o.acceleration);		
 		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), 50));
