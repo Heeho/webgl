@@ -1,28 +1,28 @@
 'use strict';
 function main() {
 	//init
-	var canvas = document.getElementById('canvas');	
+	var canvas = document.getElementById('canvas');
 	var gl = canvas.getContext('webgl');
 	if(!gl) {
 		window.alert('Absolutely no WebGL here!');
 	}
 	
-	var model = models.fighter;
+	var model = models.ships.fighter;
 	
 	var vertexShaderSource = document.getElementById('vertex-shader').text;
-	var fragmentShaderSource = document.getElementById('fragment-shader').text;	
+	var fragmentShaderSource = document.getElementById('fragment-shader').text;
 	var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-	var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);	
+	var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 	var program = createProgram(gl, vertexShader, fragmentShader);
 	
-	var positionLocation = gl.getAttribLocation(program, 'a_position');	
+	var positionLocation = gl.getAttribLocation(program, 'a_position');
 	var colorLocation = gl.getAttribLocation(program, 'a_color');
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
 	var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 
 /*-= texture from buffer =-*/
 	const texture = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, texture);	
+	gl.bindTexture(gl.TEXTURE_2D, texture);
 		const level = 0;
 		const internalFormat = gl.RGB;
 		const width = 4
@@ -31,8 +31,8 @@ function main() {
 		const format = gl.RGB;
 		const type = gl.UNSIGNED_BYTE;
 		const data = new Uint8Array([
-			255,0,0,	0,0,255,	0,255,0,	255,255,255,
-			255,255,255,	255,0,0,	0,0,255,	0,255,0,
+				255,0,0,	0,255,0,	0,0,255,	255,255,255,
+				255,255,0,	255,0,255,	0,255,255,	0,0,0,
 			
 		]);
 		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, format, type, data);
@@ -43,7 +43,7 @@ function main() {
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	
 /*-= output texture =-*/
-	//const tex = gl.createTexture();	
+	//const tex = gl.createTexture();
 	//gl.bindTexture(gl.TEXTURE_2D, tex);
 	//{
 	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -66,22 +66,22 @@ function main() {
 	//	gl.bindTexture(gl.TEXTURE_2D, texture);
 	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 	//	gl.generateMipmap(gl.TEXTURE_2D);
-	//});			
+	//});
 	
 	var indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 	setIndices(model, gl);
-	
+	//console.log(indexBuffer);
 	var positionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
-	setGeometry(model, gl);	
+	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+	setGeometry(model, gl);
 	
 	//var colorBuffer = gl.createBuffer();
 	//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-	//setColors(model, gl);	
+	//setColors(model, gl);
 	
 	var textureBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
+	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
 	setTexcoords(model, gl);
 
 	var translation = [0, 0, -10000];									// = [obj.velocity[0], obj.velocity[1], obj.velocity[2]]
@@ -121,8 +121,8 @@ function main() {
 		setIndices(model, gl);
 /*-= POSITION =-*/
 		gl.enableVertexAttribArray(positionLocation);
-		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);		
-		setGeometry(model, gl);	
+		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+		setGeometry(model, gl);
 			var size = 3;
 			var type = gl.FLOAT;
 			var normalize = false;
@@ -132,7 +132,7 @@ function main() {
 				
 /*-= TEXTURE =-*/	
 		gl.enableVertexAttribArray(texcoordLocation);
-		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);	
+		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
 		setTexcoords(model, gl);
 			var size = 2;
 			var type = gl.FLOAT;
@@ -164,7 +164,7 @@ function main() {
 		matrix = m4.zRotate(matrix, rotation[2]);
 		matrix = m4.scale(matrix, scale[0], scale[1], scale[2]);
 		
-		gl.uniformMatrix4fv(matrixLocation, false, matrix);	
+		gl.uniformMatrix4fv(matrixLocation, false, matrix);
 		
 		var primitiveType = gl.TRIANGLES;
 		var count = model.indices.length;
@@ -173,7 +173,7 @@ function main() {
 		gl.drawElements(primitiveType, count, type, offset);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);	
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 		
 		requestAnimationFrame(drawScene);
 	}
@@ -190,7 +190,7 @@ function setIndices(model, gl) {
 function setGeometry(model, gl) {
 	gl.bufferData(
 		gl.ARRAY_BUFFER, 
-		new Float32Array(model.draftnodes),
+		new Float32Array(model.nodes),
 		gl.STATIC_DRAW
 	);
 }
@@ -204,62 +204,9 @@ function setColors(model, gl) {
 }	
 
 function setTexcoords(model, gl) {
-	var m = model;
 	gl.bufferData (
 		gl.ARRAY_BUFFER,
-		new Float32Array([
-			0, 0,
-			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,		
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 1,
-			1, 1,
-			1, 0,	
-
-			0, 0,
-			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,		
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 0,
-			0, 1,
-			1, 0,
-			
-			0, 1,
-			1, 1,
-			1, 0,		
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 1,
-			1, 1,
-			1, 0,
-
-			0, 0,
-			0, 1,
-			1, 0,			
-		]),
+		new Float32Array(model.texcoords),
 		gl.STATIC_DRAW
 	);
 }

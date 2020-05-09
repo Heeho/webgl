@@ -35,6 +35,6 @@
 			var target = this.observer.target.state.location();
 			var nextCameraPosition = v3.add(v3.add(this.observer.state.location(), v3.multiply(v3.normalize(this.observer.lineoffire), -this.distance)), v3.multiply(this.up, this.distance/4));
 			
-			var cameraPosition = v3.add(currentCameraPosition, v3.multiply(v3.substract(nextCameraPosition, currentCameraPosition), this.speed));	
+			var cameraPosition = v3.add(currentCameraPosition, v3.multiply(v3.substract(nextCameraPosition, currentCameraPosition), this.speed));
 			this.state.matrix = m4.lookAt(cameraPosition, target, this.up);
 		}

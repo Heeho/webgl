@@ -8,39 +8,36 @@
 		<!--p id='description'>3D space shooter on WebGL</p-->
 
 		<script id='vertex-shader' type='notjs'>
-			attribute vec4 a_position;
+			attribute vec4 a_position;	
 			attribute vec2 a_texcoord;
 			attribute vec3 a_normal;
-
-			attribute mat4 matrix;
-			uniform mat4 projection;
-			uniform mat4 view;
+			//attribute mat4 matrix;
 			
+			uniform mat4 u_matrix;
 			varying vec2 v_texcoord;
 			varying vec3 v_normal;
-			varying mat3 v_matrix;
 
+						
 			void main() {
-				gl_Position = projection * view * matrix * a_position;
+				gl_Position = u_matrix * a_position;
 				v_texcoord = a_texcoord;
 				v_normal = a_normal;
-				v_matrix = mat3(matrix);
+				//gl_Position = matrix * a_position;
 			}
 		</script>
 		<script id='fragment-shader' type='notjs'>
 			precision mediump float;
 			
 			varying vec3 v_normal;
-			varying mat3 v_matrix;
-			varying vec2 v_texcoord;
+			varying vec2 v_texcoord;			
 			uniform sampler2D u_texture;
 			uniform vec3 u_reverseLightDirection;
 			
 			void main() {
+				vec3 n = normalize(v_normal);
+				float light = dot(n, u_reverseLightDirection);
+				
 				gl_FragColor = texture2D(u_texture, v_texcoord);
-				vec3 n = v_matrix * v_normal;
-				float ambient = 0.7;
-				float light = ambient + dot(u_reverseLightDirection, n) * (1.0 - ambient);
 				gl_FragColor.rgb *= light;
 			}
 		</script>

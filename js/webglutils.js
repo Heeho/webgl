@@ -22,7 +22,7 @@
 			gl.detachShader(program, vertexShader);
 			gl.deleteShader(vertexShader);
 			gl.detachShader(program, fragmentShader);
-			gl.deleteShader(fragmentShader);		
+			gl.deleteShader(fragmentShader);
 			return program;
 		}
 		
@@ -43,18 +43,18 @@
 		return false;
 	}
 
-	function setGeometry(o, gl) {
+	function setIndices(o, gl) {
 		gl.bufferData(
-			gl.ARRAY_BUFFER, 
-			new Float32Array(o.nodes),
+			gl.ELEMENT_ARRAY_BUFFER,
+			o.model.indices,
 			gl.STATIC_DRAW
 		);
 	}
 
-	function setColors(o, gl) {
+	function setGeometry(o, gl) {
 		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			new Uint8Array(o.model.colors),
+			gl.ARRAY_BUFFER, 
+			o.model.nodes,
 			gl.STATIC_DRAW
 		);
 	}
@@ -62,15 +62,30 @@
 	function setTexcoords(o, gl) {
 		gl.bufferData (
 			gl.ARRAY_BUFFER,
-			new Float32Array(o.model.texcoords),
+			o.model.texcoords,
 			gl.STATIC_DRAW
 		);
 	}
 	
-	function setIndices(o, gl) {
-		gl.bufferData(
-			gl.ELEMENT_ARRAY_BUFFER,
-			new Uint16Array(o.model.indices),
+	function setNormals(o, gl) {
+		gl.bufferData (
+			gl.ARRAY_BUFFER,
+			o.model.normals,
 			gl.STATIC_DRAW
 		);
 	}
+	
+	function setMatrices(o, gl) {
+		gl.bufferData(
+			gl.ARRAY_BUFFER,
+			matrixData,
+			gl.DYNAMIC_DRAW
+		);
+	}
+	//function setColors(o, gl) {
+	//	gl.bufferData(
+	//		gl.ARRAY_BUFFER,
+	//		new Uint8Array(o.model.colors),
+	//		gl.STATIC_DRAW
+	//	);
+	//}

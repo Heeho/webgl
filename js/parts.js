@@ -17,13 +17,13 @@
 		this.turnLeft = false;
 		this.turnRight = false;
 		this.accelerateON = false;
-		this.brakesON = false;	
-		this.shootON = false;	
+		this.brakesON = false;
+		this.shootON = false;
 		this.secondaryON = false;
 		this.autopilotON = false;
 		this.lockedontarget = false;
 		this.changetarget = false;
-		this.mousepos = [0, 0];		
+		this.mousepos = [0, 0];
 		this.rotationspeed = [.1,.1,.1,];
 	}
 	Controls.prototype.updatemousepos = function() 

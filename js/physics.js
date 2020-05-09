@@ -1,13 +1,13 @@
 'use strict';
-	function physics(p, o, e, c) {
-		deletenonexistant([p, o, e]);
-		actmove(e.concat(p, o, c));
-		gravity(o.concat(c));
-		hitboxes(o.concat(p, c));	
-		collide(o.concat(c), p);
+	function physics(p, e, s, c) {
+		deletenonexistant([p, e, s, c]);
+		actmove([p, e, s, c]);
+		//gravity([s, c]);
+		hitboxes([p, s, c]);
+		collide(p, s, c);
 	}
 	
-	var G = 6.67 * 10 ** (-11);	
+	var G = 6.67 * 10 ** (-11);
 	function gravity(o) {
 		//console.log('gravity');
 		var num, a1, a2, r;
@@ -33,99 +33,138 @@
 		
 	function deletenonexistant(objlist) {
 		var o;
-		for(var h = 0; h < objlist.length; h++) {
-			o = objlist[h];
-			for(var i = o.length - 1; i >= 0; i--) {
-				if(o[i].exists == false) {
-					o.splice(i, 1);
-				}				
+		for(var h in objlist) { //console.log(objlist[h]);
+			for(var i in objlist[h]) { //console.log(objlist[h][i]);
+				for(var j = objlist[h][i].instances.length - 1; j >= 0; j--) { //console.log(objlist[h][i].instances[j]);
+					if(objlist[h][i].instances[j].exists == false) {
+						objlist[h][i].instances.splice(i, 1);
+					}				
+				}
 			}
 		}
 	}
 	
-	function actmove(o) {
-		for(var i = 0; i < o.length; i++) {
-			move(o[i]);		
-			o[i].act();
+	function actmove(objlist) {
+		for(var h = 0; h < objlist.length; h++) { //p, s, e, c
+			for(var i in objlist[h]) { //a kind of p, s, e, c
+				for(var j in objlist[h][i].instances) { //console.log(o[i].instances[j]);
+					move(objlist[h][i].instances[j]);
+					objlist[h][i].instances[j].act();
+				}
+			}
 		}
 	}
 	
-	function hitboxes(o) {		
+	function hitboxes(objlist) {		
 		var tempHitbox = [];
-		var tempObj;
+		var o, tempObj;
 		
-		for(var i = 0; i < o.length; i++) {
-			tempObj = {
-				state: {
-					matrix: o[i].state.matrix.slice(),
-					velocity: o[i].state.velocity.slice(),
-					rotation: o[i].state.rotation.slice(), //o[i].state.rotation !== undefined ? _ : undefined,
-				},
-			};
-			move(tempObj);
-			
-			//console.log('tempState: ', tempState);
-			//console.log('tempState + velocity: ', tempState);
-			//console.log(o[i]);
-			for(var j = 0; j < o[i].hitbox.length; j += 3) {
-				tempHitbox = m4.m4v3(tempObj.state.matrix, o[i].hitbox.slice(j, j+3));
-				o[i].currenthitbox[j] = tempHitbox[0];
-				o[i].currenthitbox[j+1] = tempHitbox[1];
-				o[i].currenthitbox[j+2] = tempHitbox[2];
-			}
-			//console.log(o[i].currenthitbox);
-		}
-	}
-	
-	function collide(o, p) {
-		var distance, measure, penetration;
-		
-		//projectile <-> object
-		for(var i = 0; i < p.length; i++) {
-			for(var j = 0; j < o.length; j++) {
-				//console.log(p[i], o[j]);
-				distance = v3.vlength2(v3.substract(p[i].state.location(), o[j].state.location()));
-				measure = p[i].model.radius2 + o[j].model.radius2;				
-				//console.log('distance, measure: ', distance, measure);
-				
-				if(distance < measure) {
-					penetration = gjk3d(p[i], o[j]);
-					if(penetration !== undefined) {
-						p[i].onCollision(o[j], penetration);
-					}
-				}	
-			}
-		}
-				
-		//object <-> object
-		for(var i = 0; i < o.length - 1; i++) {
-			for(var j = i + 1; j < o.length; j++) {
-				/*
-					o.length: 5
-					i:	j:
-					0	1234
-					1	234
-					2	34
-					3	4
-				*/
-				
-				distance = v3.vlength2(v3.substract(o[i].state.location(), o[j].state.location()));
-				measure = o[i].model.radius2 + o[j].model.radius2;
-				
-				//console.log('distance, measure: ', distance, measure);
-				//console.log('locations: ', o[i].state.location(), o[j].state.location());
-				
-				if(distance < measure) {
-					penetration = gjk3d(o[i], o[j]);
-					if(penetration !== undefined) {
-						//console.log(o[i], o[j]);
-						o[i].onCollision(o[j], penetration);
-						o[j].onCollision(o[i], v3.inverse(penetration));
+		for(var h in objlist) { //p, s, e, c
+			for(var i in objlist[h]) { //a kind of p, s, e, c
+				for(var j in objlist[h][i].instances) { //console.log(o[i].instances[j]);
+					o = objlist[h][i].instances[j];
+					tempObj = {
+						state: {
+							matrix: o.state.matrix.slice(),
+							velocity: o.state.velocity.slice(),
+							rotation: o.state.rotation.slice(), //o[i].state.rotation !== undefined ? _ : undefined,
+						},
+					};
+					move(tempObj);
+					
+					//console.log('tempState: ', tempState);
+					//console.log('tempState + velocity: ', tempState);
+					//console.log(o[i]);
+					for(var j = 0; j < objlist[h][i].model.hitbox.length; j += 3) {
+						tempHitbox = m4.m4v3(tempObj.state.matrix, objlist[h][i].model.hitbox.slice(j, j+3)); //console.log(tempHitbox);
+						o.currenthitbox[j] = tempHitbox[0];
+						o.currenthitbox[j+1] = tempHitbox[1];
+						o.currenthitbox[j+2] = tempHitbox[2]; //console.log(o.currenthitbox);
 					}
 				}
 			}
 		}
-	}	
+	}
+	
+	function collide(projectiles, ships, celestials) {
+		var distance, measure, penetration;
+
+		var p = [];
+		for(var i in projectiles) {
+			p.push(projectiles[i]);
+		}
+		
+		var s = [];
+		for(var i in ships) {
+			s.push(ships[i]); //console.log(s);
+		}
+		
+		var projectile, ship, celestial;
+	//projectile <-> ship
+		for(var h in p) { //console.log(p[h]);
+			for(var i in p[h].instances) {
+				projectile = p[h].instances[i]; //console.log(projectile);
+				for(var j in s) {
+					for(var k in s[j].instances) {
+						ship = s[j].instances[k]; //console.log(ship);
+						distance = v3.vlength2(v3.substract(projectile.state.location(), ship.state.location()));
+						measure = p[h].model.radius2 + s[j].model.radius2; //console.log('distance, measure: ', distance, measure);
+						if(distance < measure) {
+							penetration = gjk3d(projectile, ship);
+							if(penetration !== undefined) {
+								projectile.onCollision(ship, penetration);
+							}
+						}
+					}
+				}
+			}
+		}	
+	//ship <-> ship
+		var s1, s2, a;
+		for(var h = 0; h < s.length; h++) { //console.log(s[h], s.length);
+			for(var i in s[h].instances) { //console.log(s[h].instances[i]);
+				s1 = s[h].instances[i]; //console.log(s[h].instances[i]);
+				//1) collide with all of this type except checked
+				if(s[h].instances.length > 1 && i < s[h].instances.length - 1) { //a = s[h].instances.length > 1 ? 1 : 0; console.log(a);
+					for(var j = Number(i) + 1; j < s[h].instances.length - 1; j++) {
+						s2 = s[h].instances[j]; //console.log('h: ', h, 'i: ', i, 'j: ', j, 's1, s2: ', s1, s2);
+						/*
+						s[h].instances.length: 5
+						i:	j:
+						0	1234
+						1	234
+						2	34
+						3	4
+						*/
+						distance = v3.vlength2(v3.substract(s1.state.location(), s2.state.location())); //console.log('locations: ', s1.state.location(), s2.state.location());
+						measure = s[h].model.radius2 * 2; //console.log('distance, measure: ', distance, measure);
+						if(distance < measure) {
+							penetration = gjk3d(s1, s2);
+							if(penetration !== undefined) { //console.log(s1, s2);
+								s1.onCollision(s2, penetration);
+								s2.onCollision(s1, v3.inverse(penetration));
+							}
+						}
+					}
+				}
+				//2) collide with all of other types except checked
+				for(var k = h + 1; k < s.length; k++) { //console.log(s[k]);
+					for(var l in s[k].instances) {
+						s2 = s[k].instances[l]; //console.log(s2);
+						distance = v3.vlength2(v3.substract(s1.state.location(), s2.state.location())); //console.log('locations: ', s1.state.location(), s2.state.location());
+						measure = s[h].model.radius2 + s[k].model.radius2; //console.log('distance, measure: ', distance, measure);
+						if(distance < measure) {
+							penetration = gjk3d(s1, s2);
+							if(penetration !== undefined) { //console.log(s1, s2);
+								s1.onCollision(s2, penetration);
+								s2.onCollision(s1, v3.inverse(penetration));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	function move(o) {
 		o.state.matrix[12] += o.state.velocity[0];
@@ -137,15 +176,13 @@
 		o.state.matrix = m4.yRotate(o.state.matrix, o.state.rotation[1]); o.state.rotation[1] = 0;
 	}
 	
-	function gjk3d(o1, o2) {
-		//GJK collision detection linked with EPA for penetration vector
+	function gjk3d(o1, o2) { //GJK collision detection linked with EPA for penetration vector
 		var hitbox1 = o1.currenthitbox;
-		var hitbox2 = o2.currenthitbox;
-		//console.log('hitboxes: ',hitbox1, hitbox2);
+		var hitbox2 = o2.currenthitbox; //console.log('hitboxes: ',hitbox1, hitbox2);
 		
 		var c1 = o1.state.location();
-		var c2 = o2.state.location();
-		//console.log('centres: ', c1, c2);
+		var c2 = o2.state.location(); //console.log('centres: ', c1, c2);
+
 		var central = v3.substract(c2, c1);
 		var up = [0,1,0];
 		var simplex = [];
@@ -154,36 +191,36 @@
 		var p1, p2, p3, p4;
 		var p2p1, p3p1;
 		
-		var p1p2, p1p3, p4p1, p4p2, p4p3;	
+		var p1p2, p1p3, p4p1, p4p2, p4p3;
 		var n1, n2, n3, n4;
 		
 		var collision = false;
 		var winding = 0;
 		var loopCount = 0;
 		
-		while(loopCount++ < 33) {
-			//console.log('gjk3d loop');
+		while(loopCount++ < 33) { //console.log('gjk3d loop');
 			switch(simplex.length) {
 			case 0: 
 				d1 = central;
-				if(v3.vlength(d1) == 0) {
-					//console.log('centers overlap, d1: ', d1); 
-					//collision = true;
+				if(v3.vlength(d1) == 0) { console.log('centers overlap, d1=0: ', d1);
 					return up;
 				}
 				d2 = v3.inverse(d1);
-				p1 = v3.substract(furthest(hitbox1, d1), furthest(hitbox2, d2));
-				//console.log('d1, p1: ', d1, p1);
+				p1 = v3.substract(furthest(hitbox1, d1), furthest(hitbox2, d2)); //console.log('d1, p1: ', d1, p1);
+				if(v3.vlength(p1) == 0){ console.log('vertex collision, p1=0: ', p1);
+					return central;
+				}
 				simplex.push(p1);
 				break;
 				
 			case 1:
 				p2 = v3.substract(furthest(hitbox1, d2), furthest(hitbox2, d1));
-				//console.log('d2, p2 ', d2, p2);
+				if(v3.vlength(p2) == 0){ console.log('vertex collision, p2=0: ', p2);
+					return central;
+				} //console.log('d2, p2 ', d2, p2);
 				if(v3.dot(p2, d2) > 0) {
 					simplex.push(p2);
-				} else {
-					//console.log('no collision'); 
+				} else { //console.log('no collision'); 
 					return;
 				}
 				break;
@@ -191,17 +228,16 @@
 			case 2:
 				p2p1 = v3.substract(p1,p2);
 				d3 = v3.cross(v3.cross(p2p1, p1), p2p1);
-				if(v3.vlength(d3) == 0) {
-					//console.log('edge collision, d3: ', d3); 
-					//collision = true;
+				if(v3.vlength(d3) == 0) { console.log('edge collision, d3=0: ', d3); 
 					return central;
 				}
-				p3 = v3.substract(furthest(hitbox1, d3), furthest(hitbox2, v3.inverse(d3)));
-				//console.log('d3, p3 ', d3, p3);
+				p3 = v3.substract(furthest(hitbox1, d3), furthest(hitbox2, v3.inverse(d3))); //console.log('d3, p3 ', d3, p3);
+				if(v3.vlength(p3) == 0){ console.log('vertex collision, p3=0: ', p3);
+					return central;
+				}	
 				if(v3.dot(p3, d3) > 0) {
 					simplex.push(p3);
-				} else {
-					//console.log('no collision'); 
+				} else { //console.log('no collision'); 
 					return;
 				}	
 				break;
@@ -218,6 +254,9 @@
 				d4 = v3.dot(d4, p3) < 0 ? d4 : v3.inverse(d4);
 				
 				p4 = v3.substract(furthest(hitbox1, d4), furthest(hitbox2, v3.inverse(d4)));
+				if(v3.vlength(p4) == 0){ console.log('vertex collision, p4=0: ', p4);
+					return central;
+				}	
 				//console.log('d4, p4 ', d4, p4);
 				if(v3.dot(p4, d4) > 0) {
 					simplex.push(p4);
@@ -236,16 +275,13 @@
 
 				n4 = v3.cross(p1p2, p1p3);
 				
-				winding = v3.dot(n4, p1);
+				winding = v3.dot(n4, simplex[3]);
 				
-				n1 = winding > 0 ? v3.cross(p4p2, p4p1) : v3.cross(p4p1, p4p2);
-				n2 = winding > 0 ? v3.cross(p4p3, p4p2) : v3.cross(p4p2, p4p3);
-				n3 = winding > 0 ? v3.cross(p4p1, p4p3) : v3.cross(p4p3, p4p1);		
-				n4 = winding > 0 ? n4 : v3.inverse(n4);
-				
-				//console.log('n1, n2, n3: ', n1, n2, n3);
-				//console.log('simplex[0,1,2,3]: ', simplex);
-				
+				n1 = winding > 0 ? v3.cross(p4p1, p4p2) : v3.cross(p4p2, p4p1);
+				n2 = winding > 0 ? v3.cross(p4p2, p4p3) : v3.cross(p4p3, p4p2);
+				n3 = winding > 0 ? v3.cross(p4p3, p4p1) : v3.cross(p4p1, p4p3);
+				n4 = winding > 0 ? v3.inverse(n4) : n4; //console.log('n1, n2, n3: ', n1, n2, n3); //console.log('simplex[0,1,2,3]: ', simplex);
+
 				if(v3.dot(n1, simplex[3]) < 0) {
 					simplex.splice(2, 1); d = n1;
 				} 
@@ -259,18 +295,16 @@
 					collision = true;
 				}
 				
-				if(collision) {
-					//console.log('collision!'); 
-					//return collision;
+				if(collision) { //console.log('collision!'); //return collision;
 					var penetration = epa3d([hitbox1, hitbox2],simplex,[n1, n2, n3, n4]);
 					return penetration;
-					
 				} else {
 					p4 = v3.substract(furthest(hitbox1, d), furthest(hitbox2, v3.inverse(d)));
-					if(v3.dot(p4, d) > 0) {simplex.push(p4);} else {
-						//console.log('no collision'); 
+					if(v3.dot(p4, d) > 0 || -v3.dot(v3.normalize(p4), v3.normalize(d)) < .006) {
+						simplex.push(p4);
+					} else {
 						return;
-					}
+					} 
 				}
 				break;
 			}
@@ -295,7 +329,7 @@
 		var loopCount = 0;
 		var faces = [];
 		
-		var l = [];	
+		var l = [];
 		var n = [];
 		var p = [];
 		
@@ -318,7 +352,7 @@
 		l.push(v3.dot(p[3], n[0]));
 		l.push(v3.dot(p[3], n[1]));
 		l.push(v3.dot(p[3], n[2]));
-		l.push(v3.dot(p[0], n[3]));					
+		l.push(v3.dot(p[0], n[3]));
 		
 		//form faces array
 		faces = [
@@ -329,22 +363,15 @@
 		];
 
 		while(loopCount++ < 33) {
-			//sort faces by distance to origin
-			faces.sort(function(f1, f2) {
-				return f1.distance - f2.distance;
-			});
-
-			//get the face closest to the origin and check if there are any simplex points in that direction
-			dx = faces[0].normal;
+			faces.sort(function(f1, f2) {return f1.distance - f2.distance;}); //sort faces by distance to origin
+				
+			dx = faces[0].normal; //get the face closest to the origin and check if there are any simplex points in that direction
 			lx = faces[0].distance;
 			px = v3.substract(furthest(hitboxes[0], dx), furthest(hitboxes[1], v3.inverse(dx)));
 	
-			//if none (or in tolerance margin), get this normal * distance as penetration, else check other faces 
-			measure = v3.dot(v3.substract(px, faces[0].vertices[0]), dx);
-			//console.log(measure);
-			if(measure < tolerance) {
-				penetration = v3.multiply(dx, lx);
-				//console.log(penetration);
+			if(v3.dot(v3.substract(px, faces[0].vertices[0]), dx) < tolerance) { //if none (or in tolerance margin), get this normal * distance as penetration, else check other faces //console.log(measure);
+				penetration = v3.multiply(dx, lx); //console.log(penetration);
+				console.log(loopCount);
 				return penetration;
 			} else {			
 				pxpa = v3.substract(px, faces[0].vertices[0]);
@@ -358,7 +385,7 @@
 				l1 = v3.dot(px, v3.normalize(n1));
 				
 				faces.push({
-					vertices: [px, faces[0].vertices[0], faces[0].vertices[1],], 
+					vertices: [px, faces[0].vertices[0], faces[0].vertices[1],],
 					normal: n1,	
 					distance: l1,
 				});
@@ -381,9 +408,8 @@
 						distance: l3,
 				});
 				
-				faces.shift();
-				//console.log(faces);
+				faces.shift(); //console.log(faces);
 			}			
-		}		
-		return penetration;	
+		} //console.log(loopCount);
+		return penetration;
 	}

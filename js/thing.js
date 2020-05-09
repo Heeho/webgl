@@ -1,19 +1,9 @@
 'use strict';
-	function Thing() {
+	function Thing(o) {
 		this.exists = true;
 		this.state = new State();
 		this.mass = 1;
+		this.objlist = o.objlist;
+		this.currenthitbox = [];
 	}
-	Thing.prototype.setmodel = function(m) 
-		{
-			this.model = m;
-			this.nodes = m.nodesbank[0];
-			if(m.drafthitbox != undefined) {
-				this.hitbox = m.hitboxbank[0];
-				this.currenthitbox = [];
-			}
-			if(m.TTL != undefined) {
-				this.TTL = this.model.TTL;
-			}
-		}
 	Thing.prototype.act = function() {}
