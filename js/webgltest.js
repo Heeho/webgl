@@ -6,15 +6,15 @@ function main() {
 	if(!gl) {
 		window.alert('Absolutely no WebGL here!');
 	}
-	
+
 	var model = models.ships.fighter;
-	
+
 	var vertexShaderSource = document.getElementById('vertex-shader').text;
 	var fragmentShaderSource = document.getElementById('fragment-shader').text;
 	var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
 	var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 	var program = createProgram(gl, vertexShader, fragmentShader);
-	
+
 	var positionLocation = gl.getAttribLocation(program, 'a_position');
 	var colorLocation = gl.getAttribLocation(program, 'a_color');
 	var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
@@ -33,15 +33,15 @@ function main() {
 		const data = new Uint8Array([
 				255,0,0,	0,255,0,	0,0,255,	255,255,255,
 				255,255,0,	255,0,255,	0,255,255,	0,0,0,
-			
+
 		]);
 		gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, format, type, data);
-	
+
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	
+
 /*-= output texture =-*/
 	//const tex = gl.createTexture();
 	//gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -67,7 +67,7 @@ function main() {
 	//	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 	//	gl.generateMipmap(gl.TEXTURE_2D);
 	//});
-	
+
 	var indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 	setIndices(model, gl);
@@ -75,11 +75,11 @@ function main() {
 	var positionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 	setGeometry(model, gl);
-	
+
 	//var colorBuffer = gl.createBuffer();
 	//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 	//setColors(model, gl);
-	
+
 	var textureBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
 	setTexcoords(model, gl);
@@ -88,11 +88,11 @@ function main() {
 	var rotation = [degToRad(180), degToRad(0), degToRad(0)];		// = [obj.rotation[0], obj.rotation[1], obj.rotation[2]] // theta, phi, gamma
 	var scale = [40, 40, 40];										// global scale?
 	var fieldOfViewRadians = degToRad(60);							// = camera.fieldOfView;
-	
+
 	var currentX, currentY, nextX, nextY;
 	var controls = canvas.getContext('2d');
 	var borderXY = canvas.getBoundingClientRect();
-	
+
 	//separated to controls.js
 	canvas.addEventListener('mousemove', e => {
 		nextX = e.clientX - borderXY.left;
@@ -104,13 +104,13 @@ function main() {
 		currentX = nextX;
 		currentY = nextY;
 	});
-	
+
 	requestAnimationFrame(drawScene);
-	
+
 	function drawScene() {
 		resizeCanvasToDisplaySize(gl.canvas);
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-		
+
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		gl.enable(gl.CULL_FACE);
 		gl.enable(gl.DEPTH_TEST);
@@ -129,7 +129,7 @@ function main() {
 			var stride = 0;
 			var offset = 0;
 			gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
-				
+
 /*-= TEXTURE =-*/	
 		gl.enableVertexAttribArray(texcoordLocation);
 		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
@@ -140,7 +140,7 @@ function main() {
 			var stride = 0;
 			var offset = 0;
 			gl.vertexAttribPointer(texcoordLocation, size, type, normalize, stride, offset);
-	
+
 /*-= COLORS =-*/	
 		//gl.enableVertexAttribArray(colorLocation);
 		//gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -151,11 +151,11 @@ function main() {
 		//	var offset = 0;
 		//	gl.vertexAttribPointer(
 		//		colorLocation, size, type, normalize, stride, offset);
-			
+
 		var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		var zNear = 1;
 		var zFar = 44444;
-		
+
 		var matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 		//just //matrix = m4.multiply(matrix, obj.state);
 		matrix = m4.translate(matrix, translation[0], translation[1], translation[2]);
@@ -163,18 +163,18 @@ function main() {
 		matrix = m4.yRotate(matrix, rotation[1]);
 		matrix = m4.zRotate(matrix, rotation[2]);
 		matrix = m4.scale(matrix, scale[0], scale[1], scale[2]);
-		
+
 		gl.uniformMatrix4fv(matrixLocation, false, matrix);
-		
+
 		var primitiveType = gl.TRIANGLES;
 		var count = model.indices.length;
 		var type = gl.UNSIGNED_SHORT;
 		var offset = 0;
 		gl.drawElements(primitiveType, count, type, offset);
-		
+
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
-		
+
 		requestAnimationFrame(drawScene);
 	}
 }

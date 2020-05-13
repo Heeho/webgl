@@ -7,7 +7,7 @@
 		if(success) {
 			return shader;
 		}
-		
+
 		console.log(gl.getShaderInfoLog(shader));
 		gl.deleteShader(shader);
 	}
@@ -25,7 +25,7 @@
 			gl.deleteShader(fragmentShader);
 			return program;
 		}
-		
+
 		console.log(gl.getProgramInfoLog(program));
 		gl.deleteProgram(program);
 	}
@@ -39,7 +39,7 @@
 			canvas.height = height;
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -58,7 +58,7 @@
 			gl.STATIC_DRAW
 		);
 	}
-	
+
 	function setTexcoords(o, gl) {
 		gl.bufferData (
 			gl.ARRAY_BUFFER,
@@ -66,7 +66,7 @@
 			gl.STATIC_DRAW
 		);
 	}
-	
+
 	function setNormals(o, gl) {
 		gl.bufferData (
 			gl.ARRAY_BUFFER,
@@ -74,7 +74,7 @@
 			gl.STATIC_DRAW
 		);
 	}
-	
+
 	function setMatrices(o, gl) {
 		gl.bufferData(
 			gl.ARRAY_BUFFER,

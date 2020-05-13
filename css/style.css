@@ -1,3 +1,6 @@
+html {
+    overflow-y:scroll;
+}
 #canvas {
 	background-color: #000000;
 	display: block;
@@ -5,6 +8,15 @@
 	margin-right: auto;
 	width: 100%;
 }
-#description {
+.monospace {
+	font-family: monospace;
+	text-align: left;
+}
+.monospacecenter {
+	font-family: monospace;
 	text-align: center;
 }
+.space {
+	margin-top: 300px;
+}
+

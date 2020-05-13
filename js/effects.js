@@ -22,7 +22,7 @@ function Explosion(o) {
 	} 
 	Explosion.prototype = Object.create(Effect.prototype);
 	Explosion.prototype.constructor = Explosion;
-	
+
 function Throttle(o) {
 		Effect.call(this, o);
 		this.state.matrix = o.state.matrix.slice();
@@ -32,7 +32,7 @@ function Throttle(o) {
 	} 
 	Throttle.prototype = Object.create(Effect.prototype);
 	Throttle.prototype.constructor = Throttle;
-	
+
 function Flash(o) {
 		Effect.call(this, o);
 		this.state.matrix = o.state.matrix.slice();

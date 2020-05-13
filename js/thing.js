@@ -2,7 +2,7 @@
 	function Thing(o) {
 		this.exists = true;
 		this.state = new State();
-		this.mass = 1;
+		this.mass = 1.0;
 		this.objlist = o.objlist;
 		this.currenthitbox = [];
 	}

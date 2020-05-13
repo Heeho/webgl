@@ -29,7 +29,7 @@
 		perspective: function(fieldOfViewRadians, aspect, near, far) {
 			var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewRadians);
 			var rangeInv = 1.0 / (near - far);
-			
+
 			return [
 				f/aspect, 	0, 			0, 						0,
 				0, 			f, 			0, 						0,
@@ -73,7 +73,7 @@
 					r[i] += m4[i + d*j] * v4[j];
 				}
 			}
-			
+
 			return r.slice(0,d);
 		},
 		inverse: function(m) {
@@ -211,7 +211,7 @@
 			return result;
 		}	
 	};
-	
+
 	var v3 = {
 		abs: function(v) {
 			return [Math.abs(v[0]), Math.abs(v[1]), Math.abs(v[2])];

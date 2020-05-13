@@ -17,14 +17,14 @@
 	//gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
 	// just allocate the buffer
 	//gl.bufferData(gl.ARRAY_BUFFER, matrixData.byteLength, gl.DYNAMIC_DRAW);
-	
+
 //render
 	const numInstances = 5;
 	const numVertices = 12;
 	// upload the new matrix data
 	gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, matrixData);
-	
+
 	// set all 4 attributes for matrix
 	const bytesPerMatrix = 4 * 16;
 	for (let i = 0; i < 4; ++i) {

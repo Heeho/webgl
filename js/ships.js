@@ -4,19 +4,19 @@ function Ship(o) {
 		Thing.call(this, o);
 
 		//this.mass = ?;
-		
+
 		this.isPlayer = false;
-		
+
 		this.target = null;
 		this.autopilotwinding = [];
 		this.autopilotrange2 = 6400 ** 2;
 		this.lineoffire = null;
-		
+
 		this.controls = new Controls();
 
 		//engine
 		this.acceleration = 2;
-		
+
 		//energy
 		this.energyCap = 100;
 		this.energyGain = 2;
@@ -58,7 +58,7 @@ function Ship(o) {
 		}
 	Ship.prototype.secondary = function() 
 		{		
-		
+
 		}
 	Ship.prototype.autopilotX = function() 
 		{
@@ -96,11 +96,11 @@ function Ship(o) {
 		{
 			var up = [0,1,0];
 			this.state.matrix = m4.yRotate(m4.lookAt(this.state.location(), this.target.state.location(), up), degToRad(180));
-			
+
 			var outofrange = v3.vlength2(this.lineoffire) > this.autopilotrange2 / 6;
 			var wrongdirection = v3.dot(v3.normalize(this.state.velocity), v3.normalize(this.lineoffire)) < 0;
 			var toofast = v3.vlength(this.state.velocity) > 22;
-			
+
 			if(outofrange) {
 				if(wrongdirection) {
 					if(toofast) {
@@ -116,10 +116,10 @@ function Ship(o) {
 			} else {
 				this.shoot();
 			}
-				
+
 			//var onlineoffire = v3.dot(v3.normalize(this.lineoffire), this.target.state.X()) > models.ships.interceptor.radius;
 		}
-		
+
 function Fighter(o) {
 		Ship.call(this, o);
 		this.front = models.ships.fighter.radius;
@@ -136,45 +136,45 @@ function Fighter(o) {
 			this.controls.updatemousepos();
 			this.updatelineoffire();
 			this.updateenergy();
-			
+
 			this.controls.lockedontarget = (!this.autopilotON && v3.vlength2(this.lineoffire) > this.autopilotrange2) ? false : true;
-			
+
 			if(this.controls.autopilotON && this.controls.lockedontarget) {
 				this.autopilotY();
 			}	
 			if(this.controls.changetarget || !this.target.exists) {
 				this.changetarget();
 			}
-			this.ai();/*
+			//this.ai();/*
 			this.state.rotation[1] = 
 				this.controls.turnLeft ? -this.controls.rotationspeed[1] :
 				this.controls.turnRight ? this.controls.rotationspeed[1] :
 				this.controls.lockedontarget ? this.controls.mousepos[0] * this.controls.rotationspeed[2] :
 				this.state.rotation[1];
-			
+
 			if(this.controls.shootON)		{this.shoot();}	
 			if(this.controls.accelerateON)	{this.accelerate(new Throttle(this));}
 			if(this.controls.brakesON)		{this.brake(new Throttle(this));}//*/
 		}
-	
+
 function Carrier(o) {
 		Ship.call(this, o);
 		this.front = models.ships.carrier.radius;
 		this.rear = -models.ships.carrier.radius / 2;
-		
+
 		this.controls.secondaryON = true;
 		this.energyCap = 333;
 		this.energyGain = 1;
 		this.energy = this.energyCap;
-		
+
 		this.accelerateCost = 2;
 		this.brakesCost = 2;
 		this.shootCost = 15;
 		this.secondaryCost = 333;
-				
+
 		this.acceleration = 1;
 		this.hitpoints = 999;
-		
+
 		this.state.matrix = [
 			1,	0,	0,	0,
 			0,	1,	0,	0,
@@ -187,7 +187,7 @@ function Carrier(o) {
 	}
 	Carrier.prototype = Object.create(Ship.prototype);
 	Carrier.prototype.constructor = Carrier;
-	
+
 	Carrier.prototype.act = function() 
 		{
 			this.energy += this.energy < this.energyCap ? this.energyGain : this.energy > this.energyCap ? -1 : 0;
@@ -207,23 +207,23 @@ function Carrier(o) {
 			var i = new Interceptor(this);
 			//console.log(i);
 		}
-	
+
 function Interceptor(o) {
 		Ship.call(this, o);
 		this.front = models.ships.interceptor.radius;
 		this.rear = -models.ships.interceptor.radius / 3;
-		
+
 		this.target = o.target;
 		this.controls.autopilotNO = true;
 		this.controls.lockedontarget = true;
-		
+
 		this.acceleration = 1;
 		this.hitpoints = 1;
 		this.beamrange2 = this.autopilotrange2 / 3;
 		this.shootCost = 30;
-		
+
 		this.state.matrix = m4.translate(o.state.matrix, 0, 0, o.rear);
-		
+
 		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), 50));
 
 		this.gunpoint = v3.add(this.state.location(), v3.multiply(this.state.direction(), models.ships.interceptor.size));
@@ -235,9 +235,9 @@ function Interceptor(o) {
 		{
 			this.updatelineoffire();
 			this.updateenergy();
-						
+
 			this.ai();
-			
+
 			//var destination = this.target.state.location();
 			//var direction = v3.normalize(this.lineoffire);
 		}
