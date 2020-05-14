@@ -70,8 +70,7 @@ function main() {
 
 	var indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-	setIndices(model, gl);
-	//console.log(indexBuffer);
+	setIndices(model, gl); //console.log(indexBuffer);
 	var positionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 	setGeometry(model, gl);

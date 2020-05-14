@@ -1,22 +1,43 @@
 html {
-    overflow-y:scroll;
-}
-#canvas {
+    overflow-y: scroll;
+	background-color: #774477;
+}	
+canvas {
 	background-color: #000000;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
 }
-.monospace {
-	font-family: monospace;
-	text-align: left;
+summary::-webkit-details-marker {
+    display: none;
+}
+summary:hover {
+	color: yellow;
 }
 .monospacecenter {
+	margin-bottom: 100;
 	font-family: monospace;
 	text-align: center;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+.readme {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: auto;
+	width: 100%;
+}
+a {
+	color: black;
+}
+a:hover {
+	color: yellow;
 }
 .space {
-	margin-top: 300px;
+	margin-top: 100px;
 }
-
