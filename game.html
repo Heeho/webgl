@@ -38,8 +38,7 @@
 			void main() {
 				gl_FragColor = texture2D(u_texture, v_texcoord);
 				vec3 n = v_matrix * v_normal;
-				float light = u_ambient + dot(u_reverseLightDirection, n) * (1.0 - u_ambient);
-				gl_FragColor.rgb *= light;
+				gl_FragColor.rgb *= u_ambient + dot(u_reverseLightDirection, n) * (1.0 - u_ambient);
 			}
 		</script>
 

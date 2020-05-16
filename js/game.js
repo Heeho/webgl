@@ -64,7 +64,7 @@
 					if(e.code == 'KeyS')	{player.controls.autopilotON = !player.controls.autopilotON;}
 
 					if(e.code == 'KeyR')	{player.controls.changetarget = true;}
-					if(e.code == 'Escape')	{console.log('escape');}
+					if(e.code == 'Escape')	{window.location.replace('https://heeho.github.io/webgl/index.html');}
 				});
 				document.addEventListener('keyup', (e) => {
 					if(e.code == 'KeyQ')	{player.controls.turnLeft = false;}
