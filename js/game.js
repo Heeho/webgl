@@ -24,7 +24,7 @@
 		var projectionLoc = gl.getUniformLocation(program, 'projection');
 		var viewLoc = gl.getUniformLocation(program, 'view');
 		var reverseLightDirectionLocation = gl.getUniformLocation(program, 'u_reverseLightDirection');
-		var ambientLight = gl.getUniformLocation(program, 'u_ambient');
+		var ambientLight = gl.getUniformLocation(program, 'u_lighten');
 		
 		//var sun = new Sun({objlist}); 
 		//var planet = new Planet({objlist});
@@ -62,15 +62,14 @@
 					if(e.code == 'Space')	{player.controls.brakesON = true;}
 
 					if(e.code == 'KeyS')	{player.controls.autopilotON = !player.controls.autopilotON;}
-
 					if(e.code == 'KeyR')	{player.controls.changetarget = true;}
-					if(e.code == 'Escape')	{window.location.replace('index.html');}
 				});
 				document.addEventListener('keyup', (e) => {
 					if(e.code == 'KeyQ')	{player.controls.turnLeft = false;}
 					if(e.code == 'KeyE')	{player.controls.turnRight = false;}
 					if(e.code == 'KeyW')	{player.controls.accelerateON = false;}
 					if(e.code == 'Space')	{player.controls.brakesON = false;}
+					if(e.code == 'Escape')	{statistics[2] = `You've surrendered!`; score();}
 				});
 
 		var camera = new Camera(gl, player);
@@ -124,6 +123,7 @@
 		requestAnimationFrame(start);
 
 		function start() { //(objlist.projectiles.instances, objlist.ships.instances, objlist.effects.instances, objlist.celestials.instances)
+			statistics[1] += 15;
 			render(objlist);
 			physics(objlist.projectiles, objlist.effects, objlist.ships, objlist.celestials);
 			camera.realign();
@@ -142,11 +142,14 @@
 			gl.enable(gl.DEPTH_TEST);
 			gl.useProgram(program);
 
-			gl.uniform3fv(reverseLightDirectionLocation, [0, -1, 0]);
-
+			if(player.controls.lockedontarget && player.controls.autopilotON) { //darken everything but player and player.target
+				gl.uniform3fv(reverseLightDirectionLocation, v3.inverse(player.state.Y()));
+			} else {
+				gl.uniform3fv(reverseLightDirectionLocation, [0,-1,0]);			
+			}
+			
 			var projectionMatrix = m4.perspective(camera.fieldOfViewRadians, camera.aspect, camera.zNear, camera.zFar);
-			var viewMatrix = m4.inverse(camera.state.matrix);
-			//console.log(projectionMatrix, viewMatrix);
+			var viewMatrix = m4.inverse(camera.state.matrix); //console.log(projectionMatrix, viewMatrix);
 
 			gl.uniformMatrix4fv(projectionLoc, false, projectionMatrix);
 			gl.uniformMatrix4fv(viewLoc, false, viewMatrix);
@@ -161,7 +164,7 @@
 					o.model.indices.length > 3 ? gl.enable(gl.CULL_FACE) : gl.disable(gl.CULL_FACE);
 
 					gl.uniform1f(ambientLight, o.model.ambientlight);
-
+					
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, o.indexBuffer);
 
 					gl.enableVertexAttribArray(positionLocation);
@@ -192,31 +195,31 @@
 					gl.vertexAttribPointer(normalLocation, size, type, normalize, stride, offset);
 
 					/*-=ANGLE_instanced_arrays=-*/
-					var numvertices = o.model.indices.length;
-					var numinstances = o.instances.length; //console.log(o.instances, numvertices, numinstances);
+						var numvertices = o.model.indices.length;
+						var numinstances = o.instances.length; //console.log(o.instances, numvertices, numinstances);
 
-					matrices = [];
-					for(var i in o.instances) {
-						matrices.push(...o.instances[i].state.matrix); //console.log(i, matrices);
-					} //console.log(matrices);
+						matrices = [];
+						for(var i in o.instances) {
+							matrices.push(...o.instances[i].state.matrix); //console.log(i, matrices);
+						} //console.log(matrices);
 
-					gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
-					gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(matrices), gl.DYNAMIC_DRAW);
+						gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
+						gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(matrices), gl.DYNAMIC_DRAW);
 
-					for (var i = 0; i < 4; ++i) {
-						var loc = matrixLocation + i;
-						gl.enableVertexAttribArray(loc);
-						gl.vertexAttribPointer(
-							loc,				// location
-							4,					// size (num values to pull from buffer per iteration)
-							gl.FLOAT,			// type of data in buffer
-							false,				// normalize
-							4 * 16,				// stride, num bytes to advance to get to next set of values
-							i * 4 * 4,			// offset in buffer, bytes per row of 4
-						);
-						extension.vertexAttribDivisorANGLE(loc, 1);
-					}
-
+						for (var i = 0; i < 4; ++i) {
+							var loc = matrixLocation + i;
+							gl.enableVertexAttribArray(loc);
+							gl.vertexAttribPointer(
+								loc,				// location
+								4,					// size (num values to pull from buffer per iteration)
+								gl.FLOAT,			// type of data in buffer
+								false,				// normalize
+								4 * 16,				// stride, num bytes to advance to get to next set of values
+								i * 4 * 4,			// offset in buffer, bytes per row of 4
+							);
+							extension.vertexAttribDivisorANGLE(loc, 1);
+						}
+					
 					extension.drawElementsInstancedANGLE(
 						gl.TRIANGLES, //mode, 
 						numvertices, //count, 

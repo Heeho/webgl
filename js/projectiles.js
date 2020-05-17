@@ -1,7 +1,7 @@
 'use strict';
 function Projectile(o) {
 		Thing.call(this, o);
-		this.damage = 1;
+		this.damage = 2;
 		this.TTL = 3;
 		this.decay = .95;
 	}
@@ -15,9 +15,7 @@ function Projectile(o) {
 		}
 	Projectile.prototype.onCollision = function(o, pen) 
 		{
-			o.hitpoints -= this.damage;
-			o.exists = o.hitpoints <= 0 ? false : true;
-			var e = new Explosion(o);
+			if(o.exists) {o.getdamage(this);}
 			this.exists = false;
 		}
 
@@ -28,7 +26,7 @@ function Bolt(o) {
 		var rand = 2 * (Math.random() - .5);
 
 		this.state.matrix = o.state.matrix.slice();
-		this.state.matrix = m4.translate(this.state.matrix, rand * xdeviation, rand * ydeviation, o.front + this.TTL * o.acceleration);
+		this.state.matrix = m4.translate(this.state.matrix, rand * xdeviation, rand * ydeviation, o.front + this.TTL * o.acceleration * 2);
 		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), this.TTL * o.acceleration));
 
 		this.objlist.projectiles.bolt.instances.push(this);

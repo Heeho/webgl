@@ -9,11 +9,14 @@
 			attribute vec4 a_position;
 			attribute vec2 a_texcoord;
 			attribute vec3 a_normal;
-
+			attribute float a_highlight;
+			
 			attribute mat4 matrix;
+			
 			uniform mat4 projection;
 			uniform mat4 view;
 
+			varying float v_highlight;
 			varying vec2 v_texcoord;
 			varying vec3 v_normal;
 			varying mat3 v_matrix;
@@ -31,24 +34,26 @@
 			varying vec3 v_normal;
 			varying mat3 v_matrix;
 			varying vec2 v_texcoord;
+			
+			uniform float u_lighten;			
 			uniform sampler2D u_texture;
 			uniform vec3 u_reverseLightDirection;
-			uniform float u_ambient;
 
 			void main() {
 				gl_FragColor = texture2D(u_texture, v_texcoord);
 				vec3 n = v_matrix * v_normal;
-				gl_FragColor.rgb *= u_ambient + dot(u_reverseLightDirection, n) * (1.0 - u_ambient);
+				gl_FragColor.rgb *= u_lighten + dot(u_reverseLightDirection, n) * (1.0 - u_lighten);
 			}
 		</script>
 
 		<script src="js\utils.js"></script>
-		<script src="js\webglutils.js"></script>			
+		<script src="js\webglutils.js"></script>
 	
 		<script src="js\physics.js"></script>
 		<script src="js\models.js"></script>		
 		<script src="js\parts.js"></script>	
 		<script src="js\objlist.js"></script>
+		<script src="js\statistics.js"></script>
 		
 		<script src="js\thing.js"></script>		
 		<script src="js\projectiles.js"></script>

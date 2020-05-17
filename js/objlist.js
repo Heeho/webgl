@@ -1,8 +1,5 @@
 'use strict';
 	var objlist = {
-		menu: {
-			
-		},
 		ships: {
 			fighter: {
 				model: models.ships.fighter,
@@ -28,6 +25,10 @@
 			},
 			flash: {
 				model: models.effects.flash,
+				instances: [],
+			},
+			forcefield: {
+				model: models.effects.forcefield,
 				instances: [],
 			},
 		},

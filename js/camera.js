@@ -1,10 +1,9 @@
 'use strict';
 	function Camera(gl, o) {
-		//this.zoom = 100;
 		this.observer = o;
 		this.up = [0, 1, 0];
 		this.speed = .6;
-		this.distance = 800;
+		this.distance = 600;
 		this.scale = [1, 1, 1];
 		this.fieldOfViewRadians = degToRad(55);
 		this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -26,8 +25,7 @@
 			var nextCameraPosition = v3.substract(target, camz);
 
 			var cameraPosition = v3.add(currentCameraPosition, v3.multiply(v3.substract(nextCameraPosition, currentCameraPosition), this.speed));
-			this.state.matrix = m4.lookAt(cameraPosition, target, this.up);
-			//console.log(target, camz, nextCameraPosition);
+			this.state.matrix = m4.lookAt(cameraPosition, target, this.up); //console.log(target, camz, nextCameraPosition);
 		}
 	Camera.prototype.lof = function()
 		{
