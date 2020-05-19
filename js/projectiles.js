@@ -25,8 +25,7 @@ function Bolt(o) {
 		var ydeviation = 11;
 		var rand = 2 * (Math.random() - .5);
 
-		this.state.matrix = o.state.matrix.slice();
-		this.state.matrix = m4.translate(this.state.matrix, rand * xdeviation, rand * ydeviation, o.front + this.TTL * o.acceleration * 2);
+		this.state.matrix = m4.translate(o.state.matrix, rand * xdeviation, rand * ydeviation, o.model.radius + this.TTL * o.acceleration);
 		this.state.velocity = v3.add(o.state.velocity, v3.multiply(o.state.direction(), this.TTL * o.acceleration));
 
 		this.objlist.projectiles.bolt.instances.push(this);

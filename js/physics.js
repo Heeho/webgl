@@ -254,7 +254,7 @@
 
 			case 2:
 				p2p1 = v3.substract(p1,p2);
-				d3 = v3.cross(v3.cross(p2p1, p1), p2p1);
+				d3 = v3.normalize(v3.cross(v3.cross(p2p1, p1), p2p1));
 				if(v3.vlength(d3) == 0) { console.log('edge collision, d3=0: ', d3); 
 					return central;
 				}
@@ -271,7 +271,7 @@
 
 			case 3:
 				p3p1 = v3.substract(p1,p3);
-				d4 = v3.cross(p2p1, p3p1);
+				d4 = v3.normalize(v3.cross(p2p1, p3p1));
 				if(v3.vlength(d4) == 0) {
 					//console.log('edge collision, d4: ', d4); 
 					//collision = true;
@@ -300,13 +300,13 @@
 				p4p2 = v3.substract(simplex[1], simplex[3]);
 				p4p3 = v3.substract(simplex[2], simplex[3]);
 
-				n4 = v3.cross(p1p2, p1p3);
+				n4 = v3.normalize(v3.cross(p1p2, p1p3));
 
 				winding = v3.dot(n4, simplex[3]);
 
-				n1 = winding > 0 ? v3.cross(p4p1, p4p2) : v3.cross(p4p2, p4p1);
-				n2 = winding > 0 ? v3.cross(p4p2, p4p3) : v3.cross(p4p3, p4p2);
-				n3 = winding > 0 ? v3.cross(p4p3, p4p1) : v3.cross(p4p1, p4p3);
+				n1 = winding > 0 ? v3.normalize(v3.cross(p4p1, p4p2)) : v3.normalize(v3.cross(p4p2, p4p1));
+				n2 = winding > 0 ? v3.normalize(v3.cross(p4p2, p4p3)) : v3.normalize(v3.cross(p4p3, p4p2));
+				n3 = winding > 0 ? v3.normalize(v3.cross(p4p3, p4p1)) : v3.normalize(v3.cross(p4p1, p4p3));
 				n4 = winding > 0 ? v3.inverse(n4) : n4; //console.log('n1, n2, n3: ', n1, n2, n3); //console.log('simplex[0,1,2,3]: ', simplex);
 
 				if(v3.dot(n1, simplex[3]) < 0) {
@@ -327,7 +327,7 @@
 					return penetration;
 				} else {
 					p4 = v3.substract(furthest(hitbox1, d), furthest(hitbox2, v3.inverse(d)));
-					if(v3.dot(p4, d) > 0 || -v3.dot(v3.normalize(p4), v3.normalize(d)) < .006) {
+					if(v3.dot(p4, d) > 0) {// || -v3.dot(v3.normalize(p4), v3.normalize(d)) < .0) { // strange edge cases
 						simplex.push(p4);
 					} else {
 						return;
@@ -404,7 +404,7 @@
 				pxpb = v3.substract(px, faces[0].vertices[1]);
 				pxpc = v3.substract(px, faces[0].vertices[2]);
 
-				n1 = v3.cross(pxpb, pxpa);
+				n1 = v3.normalize(v3.cross(pxpb, pxpa));
 				winding = v3.dot(n1, px);
 
 				n1 = winding > 0 ? n1 : v3.inverse(n1);
@@ -416,7 +416,7 @@
 					distance: l1,
 				});
 
-				n2 = winding > 0 ? v3.cross(pxpc, pxpb) : v3.cross(pxpb, pxpc);
+				n2 = winding > 0 ? v3.normalize(v3.cross(pxpc, pxpb)) : v3.normalize(v3.cross(pxpb, pxpc));
 				l2 = v3.dot(px, v3.normalize(n2));
 
 				faces.push({
@@ -425,7 +425,7 @@
 					distance: l2,
 				});
 
-				n3 = winding > 0 ? v3.cross(pxpa, pxpc) : v3.cross(pxpc, pxpa);
+				n3 = winding > 0 ? v3.normalize(v3.cross(pxpa, pxpc)) : v3.normalize(v3.cross(pxpc, pxpa));
 				l3 = v3.dot(px, v3.normalize(n3));
 
 				faces.push({

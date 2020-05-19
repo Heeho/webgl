@@ -92,7 +92,7 @@ function Ship(o) {
 			var offset = 0;
 			
 			var list = [];
-			//list = this.objlist.ships.interceptor.instances; /*
+			list = this.objlist.ships.interceptor.instances.concat(this.objlist.ships.carrier.instances); /*
 			for(var i in this.objlist.ships) {
 				list = list.concat(this.objlist.ships[i].instances);
 			} //console.log(list);
@@ -113,6 +113,7 @@ function Ship(o) {
 			var wrongdirection = v3.dot(v3.normalize(this.state.velocity), v3.normalize(this.lineoffire)) < 0;
 			var toofast = v3.vlength(this.state.velocity) > 22;
 
+			//chase, aim, shoot
 			if(outofrange) {
 				if(wrongdirection) {
 					if(toofast) {
@@ -127,7 +128,19 @@ function Ship(o) {
 				this.shoot();
 			}
 			
-			//var onlineoffire = v3.dot(v3.normalize(this.lineoffire), this.target.state.X()) > models.ships.interceptor.radius;
+			//strafe
+			var frontanglecos = .5;
+			var infront = v3.dot(v3.normalize(this.lineoffire), this.target.state.direction()) < frontanglecos; //console.log(infront);
+			var onleft = v3.dot(v3.normalize(this.lineoffire), this.target.state.X()) >= 0;
+			if(infront) {
+				var strafedirection = v3.cross(v3.normalize(this.lineoffire), this.target.state.Y());
+				var strafe = v3.multiply(strafedirection , this.acceleration);
+				if(onleft) {
+					this.state.velocity = v3.add(this.state.velocity, v3.inverse(strafe)); //v3.dot(this.lineoffire, target.state.direction()) -1 +- 
+				} else {
+					this.state.velocity = v3.add(this.state.velocity, strafe);
+				}
+			}		
 		}
 	Ship.prototype.getdamage = function(o) 
 		{
@@ -191,8 +204,7 @@ function Fighter(o) {
 	Fighter.prototype.die = function() 
 		{
 			this.exists = false;
-			statistics[2] = `Eventually you sucked!`;
-			score();
+			score(`Eventually you sucked!`);
 		}
 
 function Carrier(o) {
@@ -202,14 +214,14 @@ function Carrier(o) {
 		this.rear = -this.model.radius / 2;
 
 		this.controls.secondaryON = true;
-		this.energyCap = 333;
+		this.energyCap = 666;
 		this.energyGain = 1;
 		this.energy = this.energyCap;
 
 		this.accelerateCost = 2;
 		this.brakesCost = 2;
 		this.shootCost = 15;
-		this.secondaryCost = 333;
+		this.secondaryCost = 666;
 
 		this.acceleration = 1;
 		this.hitpoints = 999;

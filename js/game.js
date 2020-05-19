@@ -69,7 +69,7 @@
 					if(e.code == 'KeyE')	{player.controls.turnRight = false;}
 					if(e.code == 'KeyW')	{player.controls.accelerateON = false;}
 					if(e.code == 'Space')	{player.controls.brakesON = false;}
-					if(e.code == 'Escape')	{statistics[2] = `You've surrendered!`; score();}
+					if(e.code == 'Escape')	{score(`You've surrendered!`);}
 				});
 
 		var camera = new Camera(gl, player);
