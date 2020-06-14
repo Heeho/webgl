@@ -17,8 +17,8 @@ function Celestial(o) {
 	
 function Sun(o) {
 		Celestial.call(this, o);
-		this.mass =  (5.97 * 10 ** 24) * 332982;
-		this.state.matrix = m4.translate(this.state.matrix, 149597870700, 0, 0);
+		this.mass = 0; //(5.97 * 10 ** 24) * 332982;
+		this.state.matrix = m4.translate(this.state.matrix, models.celestials.planet.size + 4 * 10 ** 5, 1000, 15 * 10 ** 10);
 		this.objlist.celestials.sun.instances.push(this);
 	}
 	Sun.prototype = Object.create(Celestial.prototype);
@@ -26,8 +26,8 @@ function Sun(o) {
 	
 function Planet(o) {
 		Celestial.call(this, o);
-		this.mass = 5.97 * 10 ** 24;
-		this.state.matrix = m4.translate(this.state.matrix, 0, 0, models.celestials.planet.size + 30000);
+		this.mass = 0; //5.97 * 10 ** 24;
+		this.state.matrix = m4.translate(this.state.matrix, models.celestials.planet.size + 4 * 10 ** 5, 1000, 0);
 		this.objlist.celestials.planet.instances.push(this);
 	}
 	Planet.prototype = Object.create(Celestial.prototype);
@@ -35,7 +35,10 @@ function Planet(o) {
 	
 function Moon(o) {
 		Celestial.call(this, o);
-		this.mass = 7.36 * 10 ** 22;
+		this.mass = 0; //7.36 * 10 ** 22;
+		this.state.matrix = m4.translate(this.state.matrix, models.celestials.planet.size + 4 * 10 ** 5, 1000, -4 * 10 ** 8);
+		//this.state.velocity = [1000 / 60, 0, 0];
+		this.objlist.celestials.moon.instances.push(this);
 	}
 	Moon.prototype = Object.create(Celestial.prototype);
 	Moon.prototype.constructor = Moon;

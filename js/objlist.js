@@ -1,5 +1,19 @@
 'use strict';
 	var objlist = {
+		celestials: {
+			sun: {
+				model: models.celestials.sun,
+				instances: [],
+			},
+			planet: {
+				model: models.celestials.planet,
+				instances: [],
+			},
+			moon: {
+				model: models.celestials.moon,
+				instances: [],
+			},
+		},
 		ships: {
 			fighter: {
 				model: models.ships.fighter,
@@ -35,16 +49,6 @@
 		projectiles: {
 			bolt: {
 				model: models.projectiles.bolt,
-				instances: [],
-			},
-		},
-		celestials: {
-			sun: {
-				model: models.celestials.sun,
-				instances: [],
-			},
-			planet: {
-				model: models.celestials.planet,
 				instances: [],
 			},
 		},

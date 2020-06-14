@@ -2,8 +2,7 @@
 function Ship(o) {
 		//primary
 		Thing.call(this, o);
-
-		//this.mass = ?;
+		//this.mass = 10;
 
 		this.isPlayer = false;
 
@@ -134,9 +133,10 @@ function Ship(o) {
 			var onleft = v3.dot(v3.normalize(this.lineoffire), this.target.state.X()) >= 0;
 			if(infront) {
 				var strafedirection = v3.cross(v3.normalize(this.lineoffire), this.target.state.Y());
-				var strafe = v3.multiply(strafedirection , this.acceleration);
+				var strafe = v3.multiply(strafedirection , this.acceleration/2);
 				if(onleft) {
 					this.state.velocity = v3.add(this.state.velocity, v3.inverse(strafe)); //v3.dot(this.lineoffire, target.state.direction()) -1 +- 
+					this.accelerate(new Flash(this));
 				} else {
 					this.state.velocity = v3.add(this.state.velocity, strafe);
 				}
@@ -166,8 +166,7 @@ function Fighter(o) {
 		this.front = this.model.radius;
 		this.rear = -this.model.radius / 3;
 		this.hitpoints = 4;
-		this.controls.autopilotON = true;
-		//this.controls.changetarget = true;
+		this.controls.autopilotON = true; //this.controls.changetarget = true;
 		this.objlist.ships.fighter.instances.push(this);
 	}
 	Fighter.prototype = Object.create(Ship.prototype);
@@ -232,7 +231,7 @@ function Carrier(o) {
 			1,	0,	0,	0,
 			0,	1,	0,	0,
 			0,	0,	1,	0,
-			0,	0,-20000,1,
+			20000,0,0,  1,
 		];
 
 		this.gunpoint = v3.add(this.state.location(), v3.multiply(this.state.direction(), models.ships.carrier.size));
@@ -270,7 +269,7 @@ function Interceptor(o) {
 		this.controls.autopilotNO = true;
 		this.controls.lockedontarget = true;
 
-		this.acceleration = 1;
+		this.acceleration = 2;
 		this.hitpoints = 1;
 		this.beamrange2 = this.autopilotrange2 / 3;
 		this.shootCost = 30;

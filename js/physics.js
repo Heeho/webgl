@@ -4,7 +4,7 @@
 		actmove([p, e, s, c]);
 		hitboxes([p, s, c]);
 		collide(p, s, c); //console.log('starting gravity..');
-		gravity(s, c); //console.log('gravity finished');
+		//gravity(s, c); //console.log('gravity finished');
 	}
 
 	var G = 6.67 * 10 ** (-11);
@@ -15,10 +15,11 @@
 		for(var i in ships) {
 			list.push(ships[i]);
 		} 
+	
 		for(var i in celestials) {
 			list.push(celestials[i]); 
-		} //console.log(list); return;
-				
+		} //console.log(list); return;		
+		
 		var o1, o2;
 		for(var h = 0; h < list.length; h++) { //console.log(list[h]); return;
 			for(var i in list[h].instances) { //console.log(list[h].instances[i]); return;

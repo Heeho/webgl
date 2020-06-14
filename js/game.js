@@ -21,20 +21,38 @@
 		var positionLocation = gl.getAttribLocation(program, 'a_position');
 		var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
 		var normalLocation = gl.getAttribLocation(program, 'a_normal');
-		var projectionLoc = gl.getUniformLocation(program, 'projection');
-		var viewLoc = gl.getUniformLocation(program, 'view');
-		var reverseLightDirectionLocation = gl.getUniformLocation(program, 'u_reverseLightDirection');
-		var ambientLight = gl.getUniformLocation(program, 'u_lighten');
 		
-		//var sun = new Sun({objlist}); 
-		//var planet = new Planet({objlist});
-		//var moon = new Moon(celestials);
-		//var light = v3.substract(planet.state.location(), sun.state.location());
+		var viewProjectionLoc = gl.getUniformLocation(program, 'viewprojection');
 		
+		
+		var pointsource = gl.getUniformLocation(program, 'u_pointsource');
+		//var directionalsource = gl.getUniformLocation(program, 'u_directionalsource');
+		
+		var ambient = gl.getUniformLocation(program, 'u_ambient');
+		var point = gl.getUniformLocation(program, 'u_point');
+		//var directional = gl.getUniformLocation(program, 'u_directional');
+		
+		var luminosity = gl.getUniformLocation(program, 'u_luminosity');
+		var kambient = gl.getUniformLocation(program, 'u_kambient');
+		var kdiffuse = gl.getUniformLocation(program, 'u_kdiffuse');
+		var kspecular = gl.getUniformLocation(program, 'u_kspecular');
+		var shininess = gl.getUniformLocation(program, 'u_shininess');
+
+		var sun = new Sun({objlist});
+		var pointLocation = sun.state.location();//[15 * 10 ** 10, 0, 0]; //[0,0,0];
+		
+		var ambientIntensity = .1;
+		var pointIntensity = .5;		
+		//var directionalDirection = [0,-1,0];
+		//var directionalIntensity = 0;
+		
+		var planet = new Planet({objlist});
+		var moon = new Moon({objlist});
+
 		var player = new Fighter({objlist});
 		player.isPlayer = true;
 		
-		//player.target = sun;/*
+		//player.target = moon;/*
 		player.target = new Carrier({objlist});
 		player.target.target = player;//*/
 
@@ -142,28 +160,36 @@
 			gl.enable(gl.DEPTH_TEST);
 			gl.useProgram(program);
 
-			if(player.controls.lockedontarget && player.controls.autopilotON) { //darken everything but player and player.target
-				gl.uniform3fv(reverseLightDirectionLocation, v3.inverse(player.state.Y()));
-			} else {
-				gl.uniform3fv(reverseLightDirectionLocation, [0,-1,0]);			
-			}
+			gl.uniform1f(ambient, ambientIntensity);
+			gl.uniform1f(point, pointIntensity);
+			
+			gl.uniform3fv(pointsource, pointLocation);
+			
+			//gl.uniform1f(directional, directionalIntensity);
+			//gl.uniform3fv(directionalsource, directionalDirection);
 			
 			var projectionMatrix = m4.perspective(camera.fieldOfViewRadians, camera.aspect, camera.zNear, camera.zFar);
 			var viewMatrix = m4.inverse(camera.state.matrix); //console.log(projectionMatrix, viewMatrix);
-
-			gl.uniformMatrix4fv(projectionLoc, false, projectionMatrix);
-			gl.uniformMatrix4fv(viewLoc, false, viewMatrix);
+			var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+			var viewITMatrix = m4.inverse(m4.transpose(viewMatrix));
+			
+			gl.uniformMatrix4fv(viewProjectionLoc, false, viewProjectionMatrix);
 
 			var matrices;
 
 			for(var h in objlist) {
-				for(var i in objlist[h]) {
+				for(var i in objlist[h]) { //console.log(objlist[h] == objlist.celestials);
 					o = objlist[h][i]; //console.log(o); //one kind of projectiles, ships, effects, celestials 
 					if(o.instances.length == 0) {continue;}
 
 					o.model.indices.length > 3 ? gl.enable(gl.CULL_FACE) : gl.disable(gl.CULL_FACE);
+					objlist[h] == objlist.celestials ? gl.disable(gl.DEPTH_TEST) : gl.enable(gl.DEPTH_TEST);
 
-					gl.uniform1f(ambientLight, o.model.ambientlight);
+					gl.uniform1f(luminosity, o.model.luminosity);
+					gl.uniform1f(kambient, o.model.kambient);
+					gl.uniform1f(kdiffuse, o.model.kdiffuse);
+					gl.uniform1f(kspecular, o.model.kspecular);
+					gl.uniform1f(shininess, o.model.shininess);
 					
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, o.indexBuffer);
 
@@ -220,13 +246,7 @@
 							extension.vertexAttribDivisorANGLE(loc, 1);
 						}
 					
-					extension.drawElementsInstancedANGLE(
-						gl.TRIANGLES, //mode, 
-						numvertices, //count, 
-						gl.UNSIGNED_SHORT, //type, 
-						0, //offset, 
-						numinstances, //primcount
-					);
+					extension.drawElementsInstancedANGLE(gl.TRIANGLES, numvertices, gl.UNSIGNED_SHORT, 0, numinstances);
 
 					gl.bindBuffer(gl.ARRAY_BUFFER, null);
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);

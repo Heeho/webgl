@@ -8,7 +8,7 @@
 		this.fieldOfViewRadians = degToRad(55);
 		this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		this.zNear = 10;
-		this.zFar = 1495978707000; 
+		this.zFar = 149597870700; 
 		this.state = new State();
 	}
 	Camera.prototype.realign = function()

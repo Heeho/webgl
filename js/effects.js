@@ -1,8 +1,8 @@
 'use strict';
 function Effect(o) {
 		Thing.call(this, o);
-		this.TTL = 11;
-		this.decay = .8;
+		this.TTL = 22;
+		this.decay = .9;
 	}
 	Effect.prototype = Object.create(Thing.prototype);
 	Effect.prototype.constructor = Effect;
